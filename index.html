@@ -166,7 +166,7 @@
     <div class="main-frame">
         
         <div id="screen-loading" class="screen active">
-            <div id="checking-session">VERIFICANDO CREDENCIALES DE ACCESO...</div>
+            <div id="checking-session">CONECTANDO CON EL COLEGIO CENTRAL DE FIREBASE...</div>
         </div>
         
         <div id="screen-home" class="screen">
@@ -255,26 +255,38 @@
             worker();
         }
 
-        // --- SISTEMA CRÍTICO DE CONTROL DE SESIÓN ---
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        // --- SISTEMA REESTRUCTURADO DE SESIÓN ---
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 currentUserUid = user.uid;
-                const docRef = doc(db, "usuarios", user.uid);
-                const docSnap = await getDoc(docRef);
+                try {
+                    const docRef = doc(db, "usuarios", user.uid);
+                    const docSnap = await getDoc(docRef);
 
-                if (docSnap.exists()) {
-                    // ¡Tiene cuenta iniciada! Lo mandamos directo al lobby sin escalas
-                    window.location.href = "game.html";
-                } else {
-                    // Es usuario nuevo autenticado, va a la fase de registro
+                    if (docSnap.exists()) {
+                        // Si existe, va directo al lobby de juego
+                        window.location.href = "game.html";
+                    } else {
+                        // Usuario autenticado pero sin datos guardados -> Va al registro de Fivet
+                        showScreen("screen-register");
+                        startRegisterSequence();
+                    }
+                } catch (e) {
+                    console.error("Error cargando perfil:", e);
+                    // Si da error de permisos, de todas formas lo dejamos registrarse para guardar datos nuevos
                     showScreen("screen-register");
                     startRegisterSequence();
                 }
             } else {
-                // No está logeado, se le muestra la portada normal con la animación
+                // No hay sesión en absoluto. Mostrar la portada limpia con el botón de Google al instante.
                 showScreen("screen-home");
                 const welcomeText = "Bienvenido a Frontera-X, un battle royale beta (todavía no registrado) dónde ustedes son bienvenidos. Tendrán recursos limitados si están desde el inicio de esta aventura. Comienza cómo invitado o créate una cuenta de Google.";
-                typeEffect("text-welcome", welcomeText, 15, () => {
+                typeEffect("text-welcome", welcomeText, 10, () => {
                     document.getElementById("support-home").innerHTML = `Si necesitas ayuda, envía un correo a <a href="mailto:fronterax@googlegroups.com">fronterax@googlegroups.com</a>`;
                 });
             }
@@ -282,17 +294,15 @@
 
         // Trigger del Botón de Login con Google
         document.getElementById("login-google").addEventListener("click", () => {
-            signInWithPopup(auth, googleProvider).catch((e) => alert("Error al conectar con Google o ventana cerrada."));
+            signInWithPopup(auth, googleProvider).catch((e) => {
+                console.error("Error popup:", e);
+                alert("Ventana de autenticación cerrada o bloqueada.");
+            });
         });
-
-        function showScreen(screenId) {
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.getElementById(screenId).classList.add('active');
-        }
 
         function startRegisterSequence() {
             const fivetDialogue = "¡Hey, soy Fivet, un personaje que todavía no puedes ver! Primero, elige un nombre de usuario. Debe tener al menos tres letras.";
-            typeEffect("text-fivet", fivetDialogue, 20, () => {
+            typeEffect("text-fivet", fivetDialogue, 15, () => {
                 document.getElementById("input-area").style.display = "block";
                 document.getElementById("btn-next").style.display = "block";
             });
@@ -321,7 +331,7 @@
                 document.getElementById("btn-next").disabled = true;
                 document.getElementById("btn-next").style.display = "none";
 
-                typeEffect("text-fivet", "Perfecto, ahora indícame: ¿De qué región eres operativo? Esto determinará tu código de enrutamiento en la frontera.", 20, () => {
+                typeEffect("text-fivet", "Perfecto, ahora indícame: ¿De qué región eres operativo? Esto determinará tu código de enrutamiento en la frontera.", 15, () => {
                     document.getElementById("region-area").style.display = "block";
                 });
             } else if (currentStep === 2) {
@@ -343,14 +353,13 @@
             document.getElementById("card-id-val").textContent = userData.id;
 
             const cardMsg = "Esta es tu tarjeta de batalla, guárdala y prepárate para empezar la batalla.";
-            typeEffect("text-card-msg", cardMsg, 20, () => {
+            typeEffect("text-card-msg", cardMsg, 15, () => {
                 const launchBtn = document.getElementById("btn-launch");
                 launchBtn.style.display = "block";
                 
-                // --- ARREGLO DE FLUJO: GUARDADO Y REDIRECCIÓN INMEDIATA AL LOBBY ---
-                launchBtn.addEventListener("click", async () => {
+                launchBtn.onclick = async () => {
                     launchBtn.disabled = true;
-                    launchBtn.textContent = "SINCRONIZANDO CON LA FRONTERA...";
+                    launchBtn.textContent = "GUARDANDO EN FIRESTORE...";
                     try {
                         await setDoc(doc(db, "usuarios", currentUserUid), {
                             username: userData.name,
@@ -360,16 +369,14 @@
                             diamantes: 36,
                             created_at: new Date()
                         });
-                        
-                        // Redirección exitosa garantizada tras confirmar Firestore
                         window.location.href = "game.html";
                     } catch (error) {
-                        console.error(error);
-                        alert("Error crítico de comunicación con el servidor de base de datos.");
+                        console.error("Error al guardar:", error);
+                        alert("Error de guardado. Asegúrate de actualizar las Reglas en la consola de Firebase.");
                         launchBtn.disabled = false;
                         launchBtn.textContent = "Reintentar Despliegue";
                     }
-                });
+                };
             });
         }
     </script>
