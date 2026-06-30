@@ -166,7 +166,7 @@
     <div class="main-frame">
         
         <div id="screen-loading" class="screen active">
-            <div id="checking-session">CONECTANDO CON EL COLEGIO CENTRAL DE FIREBASE...</div>
+            <div id="checking-session">CONECTANDO CON EL SERVIDOR DE FIREBASE...</div>
         </div>
         
         <div id="screen-home" class="screen">
@@ -260,7 +260,7 @@
             document.getElementById(screenId).classList.add('active');
         }
 
-        // --- SISTEMA REESTRUCTURADO DE SESIÓN ---
+        // --- DIRECCIONAMIENTO CORREGIDO HACIA LA SUB-CARPETA ---
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 currentUserUid = user.uid;
@@ -269,21 +269,18 @@
                     const docSnap = await getDoc(docRef);
 
                     if (docSnap.exists()) {
-                        // Si existe, va directo al lobby de juego
-                        window.location.href = "game.html";
+                        // Cambiado: Ahora apunta directamente a la ruta de la subcarpeta /game/
+                        window.location.href = "game/";
                     } else {
-                        // Usuario autenticado pero sin datos guardados -> Va al registro de Fivet
                         showScreen("screen-register");
                         startRegisterSequence();
                     }
                 } catch (e) {
                     console.error("Error cargando perfil:", e);
-                    // Si da error de permisos, de todas formas lo dejamos registrarse para guardar datos nuevos
                     showScreen("screen-register");
                     startRegisterSequence();
                 }
             } else {
-                // No hay sesión en absoluto. Mostrar la portada limpia con el botón de Google al instante.
                 showScreen("screen-home");
                 const welcomeText = "Bienvenido a Frontera-X, un battle royale beta (todavía no registrado) dónde ustedes son bienvenidos. Tendrán recursos limitados si están desde el inicio de esta aventura. Comienza cómo invitado o créate una cuenta de Google.";
                 typeEffect("text-welcome", welcomeText, 10, () => {
@@ -292,11 +289,10 @@
             }
         });
 
-        // Trigger del Botón de Login con Google
         document.getElementById("login-google").addEventListener("click", () => {
             signInWithPopup(auth, googleProvider).catch((e) => {
                 console.error("Error popup:", e);
-                alert("Ventana de autenticación cerrada o bloqueada.");
+                alert("Ventana de autenticación cerrada.");
             });
         });
 
@@ -361,18 +357,20 @@
                     launchBtn.disabled = true;
                     launchBtn.textContent = "GUARDANDO EN FIRESTORE...";
                     try {
+                        // Cambiado aquí también: Nuevos jugadores inician con 1000 monedas y 0 diamantes
                         await setDoc(doc(db, "usuarios", currentUserUid), {
                             username: userData.name,
                             gameId: userData.id,
                             region: userData.region,
-                            oro: 330225,
-                            diamantes: 36,
+                            oro: 1000,
+                            diamantes: 0,
                             created_at: new Date()
                         });
-                        window.location.href = "game.html";
+                        // Redirige a la subcarpeta del juego tras guardar
+                        window.location.href = "game/";
                     } catch (error) {
                         console.error("Error al guardar:", error);
-                        alert("Error de guardado. Asegúrate de actualizar las Reglas en la consola de Firebase.");
+                        alert("Error de guardado.");
                         launchBtn.disabled = false;
                         launchBtn.textContent = "Reintentar Despliegue";
                     }
