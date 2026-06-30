@@ -155,14 +155,21 @@
 
         .support-info { font-size: 12px; color: var(--text-muted); text-align: center; margin-top: 30px; }
         .support-info a { color: var(--accent); text-decoration: none; }
+        
+        #checking-session {
+            text-align: center; font-family: 'JetBrains Mono', monospace; color: var(--accent); font-size: 14px;
+        }
     </style>
 </head>
 <body>
 
     <div class="main-frame">
         
-        <!-- PARTE 1: PORTADA -->
-        <div id="screen-home" class="screen active">
+        <div id="screen-loading" class="screen active">
+            <div id="checking-session">VERIFICANDO CREDENCIALES DE ACCESO...</div>
+        </div>
+        
+        <div id="screen-home" class="screen">
             <h1>Frontera-X</h1>
             <div class="dialogue-box">
                 <span id="text-welcome"></span><span class="cursor"></span>
@@ -174,7 +181,6 @@
             <div class="support-info" id="support-home"></div>
         </div>
 
-        <!-- PARTE 2: REGISTRO -->
         <div id="screen-register" class="screen">
             <h1>Registro</h1>
             <div class="dialogue-box">
@@ -197,7 +203,6 @@
             <button class="btn btn-accent" id="btn-next" style="display:none;" disabled>Continuar Protocolo</button>
         </div>
 
-        <!-- PARTE 3: TARJETA -->
         <div id="screen-card" class="screen">
             <h1>Credencial</h1>
             <div class="battle-card">
@@ -213,12 +218,11 @@
             <div class="dialogue-box" style="color: #67e8f9; border-color: #00d2ff;">
                 <span id="text-card-msg"></span><span class="cursor"></span>
             </div>
-            <button class="btn btn-accent" id="btn-launch" style="display:none;">Subiendo Datos al Sistema...</button>
+            <button class="btn btn-accent" id="btn-launch" style="display:none;">Guardar y Desplegar</button>
         </div>
 
     </div>
 
-    <!-- SDK DE FIREBASE (Autenticación + Firestore Base de Datos) -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
@@ -251,36 +255,34 @@
             worker();
         }
 
-        // Carga de bienvenida
-        const welcomeText = "Bienvenido a Frontera-X, un battle royale beta (todavía no registrado) dónde ustedes son bienvenidos. Tendrán recursos limitados si están desde el inicio de esta aventura. Comienza cómo invitado o créate una cuenta de Google.";
-        window.addEventListener("DOMContentLoaded", () => {
-            typeEffect("text-welcome", welcomeText, 15, () => {
-                document.getElementById("support-home").innerHTML = `Si necesitas ayuda, envía un correo a <a href="mailto:fronterax@googlegroups.com">fronterax@googlegroups.com</a>`;
-            });
-        });
-
-        // Login con Google
-        document.getElementById("login-google").addEventListener("click", () => {
-            signInWithPopup(auth, googleProvider).catch((e) => alert("Error al conectar con Google."));
-        });
-
-        // Escuchar estado de sesión
+        // --- SISTEMA CRÍTICO DE CONTROL DE SESIÓN ---
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 currentUserUid = user.uid;
-                // Comprobamos si el usuario ya existe en la base de datos Firestore
                 const docRef = doc(db, "usuarios", user.uid);
                 const docSnap = await getDoc(docRef);
 
                 if (docSnap.exists()) {
-                    // Si ya está registrado, directo al juego
+                    // ¡Tiene cuenta iniciada! Lo mandamos directo al lobby sin escalas
                     window.location.href = "game.html";
                 } else {
-                    // Si es nuevo, iniciar flujo Fivet (/registeraccount)
+                    // Es usuario nuevo autenticado, va a la fase de registro
                     showScreen("screen-register");
                     startRegisterSequence();
                 }
+            } else {
+                // No está logeado, se le muestra la portada normal con la animación
+                showScreen("screen-home");
+                const welcomeText = "Bienvenido a Frontera-X, un battle royale beta (todavía no registrado) dónde ustedes son bienvenidos. Tendrán recursos limitados si están desde el inicio de esta aventura. Comienza cómo invitado o créate una cuenta de Google.";
+                typeEffect("text-welcome", welcomeText, 15, () => {
+                    document.getElementById("support-home").innerHTML = `Si necesitas ayuda, envía un correo a <a href="mailto:fronterax@googlegroups.com">fronterax@googlegroups.com</a>`;
+                });
             }
+        });
+
+        // Trigger del Botón de Login con Google
+        document.getElementById("login-google").addEventListener("click", () => {
+            signInWithPopup(auth, googleProvider).catch((e) => alert("Error al conectar con Google o ventana cerrada."));
         });
 
         function showScreen(screenId) {
@@ -341,15 +343,14 @@
             document.getElementById("card-id-val").textContent = userData.id;
 
             const cardMsg = "Esta es tu tarjeta de batalla, guárdala y prepárate para empezar la batalla.";
-            typeEffect("text-card-msg", cardMsg, 20, async () => {
+            typeEffect("text-card-msg", cardMsg, 20, () => {
                 const launchBtn = document.getElementById("btn-launch");
                 launchBtn.style.display = "block";
-                launchBtn.textContent = "Guardar y Desplegar";
                 
-                // Guardado Real en Firebase Firestore
+                // --- ARREGLO DE FLUJO: GUARDADO Y REDIRECCIÓN INMEDIATA AL LOBBY ---
                 launchBtn.addEventListener("click", async () => {
                     launchBtn.disabled = true;
-                    launchBtn.textContent = "Sincronizando...";
+                    launchBtn.textContent = "SINCRONIZANDO CON LA FRONTERA...";
                     try {
                         await setDoc(doc(db, "usuarios", currentUserUid), {
                             username: userData.name,
@@ -359,11 +360,14 @@
                             diamantes: 36,
                             created_at: new Date()
                         });
+                        
+                        // Redirección exitosa garantizada tras confirmar Firestore
                         window.location.href = "game.html";
                     } catch (error) {
                         console.error(error);
-                        alert("Error al guardar perfil.");
+                        alert("Error crítico de comunicación con el servidor de base de datos.");
                         launchBtn.disabled = false;
+                        launchBtn.textContent = "Reintentar Despliegue";
                     }
                 });
             });
