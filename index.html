@@ -32,7 +32,6 @@
             padding: 20px;
         }
 
-        /* Contenedor con Efecto de Distorsión y Glitch Sutil */
         .main-frame {
             background: var(--card-bg);
             backdrop-filter: blur(20px);
@@ -44,7 +43,6 @@
             max-width: 560px;
             box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7), 0 0 50px rgba(0, 0, 0, 0.5);
             position: relative;
-            transition: all 0.5s ease;
         }
 
         .screen { display: none; }
@@ -67,7 +65,6 @@
             text-transform: uppercase;
         }
 
-        /* Cuadros de Diálogo Estilo IA */
         .dialogue-box {
             font-family: 'JetBrains Mono', monospace;
             font-size: 14px;
@@ -80,17 +77,6 @@
             margin-bottom: 35px;
             box-shadow: inset 0 2px 8px rgba(0,0,0,0.8);
             position: relative;
-            overflow: hidden;
-        }
-
-        .dialogue-box::before {
-            content: "SYSTEM LOG //";
-            position: absolute;
-            top: 6px;
-            right: 12px;
-            font-size: 9px;
-            color: rgba(255,255,255,0.2);
-            letter-spacing: 1px;
         }
 
         .cursor {
@@ -103,12 +89,8 @@
             animation: blink 0.8s infinite;
         }
 
-        @keyframes blink {
-            0%, 100% { opacity: 0; }
-            50% { opacity: 1; }
-        }
+        @keyframes blink { 0%, 100% { opacity: 0; } 50% { opacity: 1; } }
 
-        /* Formularios Estilizados */
         .form-group { margin-bottom: 25px; text-align: left; }
         label { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: var(--text-muted); margin-bottom: 10px; font-weight: 700; }
         
@@ -121,15 +103,9 @@
             color: #fff;
             font-size: 16px;
             font-family: 'JetBrains Mono', monospace;
-            transition: all 0.3s ease;
         }
-        .input-cyber:focus {
-            outline: none;
-            border-color: var(--accent);
-            box-shadow: 0 0 15px var(--accent-glow);
-        }
+        .input-cyber:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 15px var(--accent-glow); }
 
-        /* Selectores de Región Interactivos */
         .region-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 30px; }
         .region-card {
             background: rgba(255,255,255,0.03);
@@ -142,11 +118,8 @@
             font-size: 14px;
             transition: all 0.25s ease;
         }
-        .region-card:hover { border-color: rgba(0, 255, 204, 0.4); background: rgba(0, 255, 204, 0.02); }
         .region-card.selected { border-color: var(--accent); background: rgba(0, 255, 204, 0.08); box-shadow: 0 0 20px var(--accent-glow); }
 
-        /* Botones del Sistema */
-        .btn-group { display: flex; flex-direction: column; gap: 15px; }
         .btn {
             width: 100%;
             padding: 18px;
@@ -154,23 +127,17 @@
             font-size: 14px;
             font-weight: 700;
             cursor: pointer;
-            transition: all 0.25s ease;
             border: none;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 12px;
             text-transform: uppercase;
-            letter-spacing: 1px;
         }
         .btn-google { background-color: #ffffff; color: #0f172a; }
-        .btn-google:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(255,255,255,0.06); }
-        
         .btn-accent { background: var(--accent); color: #06080c; box-shadow: 0 4px 20px var(--accent-glow); }
-        .btn-accent:hover { transform: translateY(-2px); filter: brightness(1.1); box-shadow: 0 6px 25px var(--accent-glow); }
-        .btn-accent:disabled { opacity: 0.3; cursor: not-allowed; transform: none; box-shadow: none; }
+        .btn-accent:disabled { opacity: 0.3; cursor: not-allowed; }
 
-        /* TARJETA DE COMBATE FINAL */
         .battle-card {
             background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
             border: 2px solid var(--accent);
@@ -178,23 +145,12 @@
             padding: 30px;
             margin-bottom: 35px;
             position: relative;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.5), 0 0 30px var(--accent-glow);
-            text-align: left;
-            overflow: hidden;
-        }
-        .battle-card::before {
-            content: "FRONTERA-X OP-CARD";
-            position: absolute;
-            bottom: 12px;
-            right: 15px;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 10px;
-            color: rgba(0, 255, 204, 0.2);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
         }
         .card-field { margin-bottom: 15px; }
         .card-field span { display: block; font-family: 'JetBrains Mono', monospace; }
-        .field-label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
-        .field-value { font-size: 22px; font-weight: 800; color: #fff; margin-top: 2px; }
+        .field-label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; }
+        .field-value { font-size: 22px; font-weight: 800; color: #fff; }
         #card-id-val { color: var(--accent); letter-spacing: 2px; }
 
         .support-info { font-size: 12px; color: var(--text-muted); text-align: center; margin-top: 30px; }
@@ -205,50 +161,45 @@
 
     <div class="main-frame">
         
-        <!-- PANTALLA 1: PORTADA PRINCIPAL -->
+        <!-- PARTE 1: PORTADA -->
         <div id="screen-home" class="screen active">
             <h1>Frontera-X</h1>
             <div class="dialogue-box">
                 <span id="text-welcome"></span><span class="cursor"></span>
             </div>
-            <div class="btn-group">
-                <button class="btn btn-google" id="login-google">
-                    <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v3.92h6.69c-.29 1.5-.14 3.01-.97 4.29l3.12 2.42c1.83-1.69 2.91-4.18 2.91-7.14z"/><path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.12-2.42c-.86.58-1.97.94-3.12.94-2.41 0-4.45-1.63-5.18-3.82l-3.22 2.48C5.23 21.83 8.36 24 12 24z"/><path fill="#FBBC05" d="M6.82 15.79c-.19-.58-.3-1.2-.3-1.84s.11-1.26.3-1.84l-3.22-2.48C2.88 10.99 2 12.42 2 14s.88 3.01 2.6 4.27l3.22-2.48z"/><path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 8.36 0 5.23 2.17 3.6 5.43l3.22 2.48c.73-2.19 2.77-3.82 5.18-3.82z"/></svg>
-                    Autenticarse con Google
-                </button>
-            </div>
+            <button class="btn btn-google" id="login-google">
+                <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v3.92h6.69c-.29 1.5-.14 3.01-.97 4.29l3.12 2.42c1.83-1.69 2.91-4.18 2.91-7.14z"/><path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.12-2.42c-.86.58-1.97.94-3.12.94-2.41 0-4.45-1.63-5.18-3.82l-3.22 2.48C5.23 21.83 8.36 24 12 24z"/><path fill="#FBBC05" d="M6.82 15.79c-.19-.58-.3-1.2-.3-1.84s.11-1.26.3-1.84l-3.22-2.48C2.88 10.99 2 12.42 2 14s.88 3.01 2.6 4.27l3.22-2.48z"/><path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 8.36 0 5.23 2.17 3.6 5.43l3.22 2.48c.73-2.19 2.77-3.82 5.18-3.82z"/></svg>
+                Autenticarse con Google
+            </button>
             <div class="support-info" id="support-home"></div>
         </div>
 
-        <!-- PANTALLA 2: /REGISTERACCOUNT (DIÁLOGO FIVET) -->
+        <!-- PARTE 2: REGISTRO -->
         <div id="screen-register" class="screen">
             <h1>Registro</h1>
             <div class="dialogue-box">
                 <span id="text-fivet"></span><span class="cursor"></span>
             </div>
             
-            <!-- Entrada de Nombre -->
             <div class="form-group" id="input-area" style="display:none;">
                 <label>Nickname de Operador</label>
                 <input type="text" id="username" class="input-cyber" placeholder="Mínimo 3 caracteres..." autocomplete="off">
             </div>
 
-            <!-- Selección de Región -->
             <div id="region-area" style="display:none;">
                 <label>Asignación de Región Geográfica</label>
                 <div class="region-grid">
-                    <div class="region-card" onclick="setRegion('sur')">América del Sur</div>
-                    <div class="region-card" onclick="setRegion('norte')">América del Norte</div>
+                    <div class="region-card" id="geo-sur">América del Sur</div>
+                    <div class="region-card" id="geo-norte">América del Norte</div>
                 </div>
             </div>
 
             <button class="btn btn-accent" id="btn-next" style="display:none;" disabled>Continuar Protocolo</button>
         </div>
 
-        <!-- PANTALLA 3: TARJETA DE BATALLA FINAL -->
+        <!-- PARTE 3: TARJETA -->
         <div id="screen-card" class="screen">
             <h1>Credencial</h1>
-            
             <div class="battle-card">
                 <div class="card-field">
                     <span class="field-label">OPERADOR</span>
@@ -259,19 +210,19 @@
                     <span class="field-value" id="card-id-val">000000000</span>
                 </div>
             </div>
-
             <div class="dialogue-box" style="color: #67e8f9; border-color: #00d2ff;">
                 <span id="text-card-msg"></span><span class="cursor"></span>
             </div>
-
-            <button class="btn btn-accent" id="btn-launch" style="display:none;">Iniciar Despliegue</button>
+            <button class="btn btn-accent" id="btn-launch" style="display:none;">Subiendo Datos al Sistema...</button>
         </div>
 
     </div>
 
+    <!-- SDK DE FIREBASE (Autenticación + Firestore Base de Datos) -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-        import { getAuth, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDeUPVDX40AFX-W_crtUWm0TsXS2smx1zo",
@@ -284,50 +235,52 @@
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
+        const db = getFirestore(app);
         const googleProvider = new GoogleAuthProvider();
 
-        // Data temporal del registro
+        let currentUserUid = null;
         let userData = { name: "", region: "", id: "" };
-        let currentStep = 1; // 1: Nombre, 2: Región
+        let currentStep = 1;
 
-        // --- MÁQUINA DE ESCRIBIR REUTILIZABLE ---
         function typeEffect(elementId, text, speed, callback) {
-            let i = 0;
-            const el = document.getElementById(elementId);
-            el.textContent = "";
+            let i = 0; const el = document.getElementById(elementId); el.textContent = "";
             function worker() {
-                if (i < text.length) {
-                    el.textContent += text.charAt(i);
-                    i++;
-                    setTimeout(worker, speed);
-                } else if (callback) {
-                    callback();
-                }
+                if (i < text.length) { el.textContent += text.charAt(i); i++; setTimeout(worker, speed); }
+                else if (callback) callback();
             }
             worker();
         }
 
-        // Carga inicial de Portada
+        // Carga de bienvenida
         const welcomeText = "Bienvenido a Frontera-X, un battle royale beta (todavía no registrado) dónde ustedes son bienvenidos. Tendrán recursos limitados si están desde el inicio de esta aventura. Comienza cómo invitado o créate una cuenta de Google.";
         window.addEventListener("DOMContentLoaded", () => {
-            typeEffect("text-welcome", welcomeText, 20, () => {
+            typeEffect("text-welcome", welcomeText, 15, () => {
                 document.getElementById("support-home").innerHTML = `Si necesitas ayuda, envía un correo a <a href="mailto:fronterax@googlegroups.com">fronterax@googlegroups.com</a>`;
             });
         });
 
-        // Evento Google -> Transición a /registeraccount simulado de forma interna e interactiva
+        // Login con Google
         document.getElementById("login-google").addEventListener("click", () => {
-            signInWithPopup(auth, googleProvider)
-                .then((result) => {
+            signInWithPopup(auth, googleProvider).catch((e) => alert("Error al conectar con Google."));
+        });
+
+        // Escuchar estado de sesión
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                currentUserUid = user.uid;
+                // Comprobamos si el usuario ya existe en la base de datos Firestore
+                const docRef = doc(db, "usuarios", user.uid);
+                const docSnap = await getDoc(docRef);
+
+                if (docSnap.exists()) {
+                    // Si ya está registrado, directo al juego
+                    window.location.href = "game.html";
+                } else {
+                    // Si es nuevo, iniciar flujo Fivet (/registeraccount)
                     showScreen("screen-register");
                     startRegisterSequence();
-                })
-                .catch((err) => {
-                    console.error(err);
-                    alert("Error de conexión con Google, procediendo a modo simulación de desarrollo.");
-                    showScreen("screen-register");
-                    startRegisterSequence();
-                });
+                }
+            }
         });
 
         function showScreen(screenId) {
@@ -335,84 +288,86 @@
             document.getElementById(screenId).classList.add('active');
         }
 
-        // --- SECUENCIA DE REGISTRO (/registeraccount) ---
         function startRegisterSequence() {
             const fivetDialogue = "¡Hey, soy Fivet, un personaje que todavía no puedes ver! Primero, elige un nombre de usuario. Debe tener al menos tres letras.";
-            typeEffect("text-fivet", fivetDialogue, 25, () => {
+            typeEffect("text-fivet", fivetDialogue, 20, () => {
                 document.getElementById("input-area").style.display = "block";
                 document.getElementById("btn-next").style.display = "block";
             });
         }
 
-        // Validar caracteres del Nickname
         document.getElementById("username").addEventListener("input", (e) => {
-            const val = e.target.value.trim();
-            const btn = document.getElementById("btn-next");
-            if (currentStep === 1) {
-                btn.disabled = val.length < 3;
-            }
+            if (currentStep === 1) document.getElementById("btn-next").disabled = e.target.value.trim().length < 3;
         });
 
-        // Control de botón "Continuar"
+        document.getElementById("geo-sur").addEventListener("click", () => selectRegion("América del Sur", "geo-sur"));
+        document.getElementById("geo-norte").addEventListener("click", () => selectRegion("América del Norte", "geo-norte"));
+
+        function selectRegion(regionName, elementId) {
+            userData.region = regionName;
+            document.querySelectorAll('.region-card').forEach(c => c.classList.remove('selected'));
+            document.getElementById(elementId).classList.add('selected');
+            document.getElementById("btn-next").disabled = false;
+            document.getElementById("btn-next").style.display = "block";
+        }
+
         document.getElementById("btn-next").addEventListener("click", () => {
             if (currentStep === 1) {
                 userData.name = document.getElementById("username").value.trim();
                 currentStep = 2;
-                
-                // Transición al diálogo de Región
                 document.getElementById("input-area").style.display = "none";
-                document.getElementById("btn-next").style.disabled = true;
+                document.getElementById("btn-next").disabled = true;
                 document.getElementById("btn-next").style.display = "none";
 
-                typeEffect("text-fivet", "Perfecto, ahora indícame: ¿De qué región eres operativo? Esto determinará tu código de enrutamiento en la frontera.", 25, () => {
+                typeEffect("text-fivet", "Perfecto, ahora indícame: ¿De qué región eres operativo? Esto determinará tu código de enrutamiento en la frontera.", 20, () => {
                     document.getElementById("region-area").style.display = "block";
                 });
             } else if (currentStep === 2) {
-                // Generar ID en base a la región elegida
-                generateCyberID();
-                // Ir a la entrega de Tarjeta
+                generateId();
                 showScreen("screen-card");
                 displayBattleCard();
             }
         });
 
-        // Configurar Región
-        window.setRegion = function(region) {
-            userData.region = region;
-            document.querySelectorAll('.region-card').forEach(c => c.classList.remove('selected'));
-            event.target.classList.add('selected');
-            
-            const btn = document.getElementById("btn-next");
-            btn.disabled = false;
-            btn.style.display = "block";
-        };
-
-        // Generador Numérico bajo condiciones estrictas
-        function generateCyberID() {
-            let prefix = userData.region === "sur" ? "10" : "16";
-            // Completar los 7 dígitos restantes de manera aleatoria
+        function generateId() {
+            let prefix = userData.region === "América del Sur" ? "10" : "16";
             let remainder = "";
-            for (let i = 0; i < 7; i++) {
-                remainder += Math.floor(Math.random() * 10).toString();
-            }
+            for (let i = 0; i < 7; i++) remainder += Math.floor(Math.random() * 10).toString();
             userData.id = prefix + remainder;
         }
 
-        // --- PANTALLA FINAL DE CREDENCIAL ---
         function displayBattleCard() {
             document.getElementById("card-name-val").textContent = userData.name;
             document.getElementById("card-id-val").textContent = userData.id;
 
             const cardMsg = "Esta es tu tarjeta de batalla, guárdala y prepárate para empezar la batalla.";
-            typeEffect("text-card-msg", cardMsg, 25, () => {
-                document.getElementById("btn-launch").style.display = "block";
+            typeEffect("text-card-msg", cardMsg, 20, async () => {
+                const launchBtn = document.getElementById("btn-launch");
+                launchBtn.style.display = "block";
+                launchBtn.textContent = "Guardar y Desplegar";
+                
+                // Guardado Real en Firebase Firestore
+                launchBtn.addEventListener("click", async () => {
+                    launchBtn.disabled = true;
+                    launchBtn.textContent = "Sincronizando...";
+                    try {
+                        await setDoc(doc(db, "usuarios", currentUserUid), {
+                            username: userData.name,
+                            gameId: userData.id,
+                            region: userData.region,
+                            oro: 330225,
+                            diamantes: 36,
+                            created_at: new Date()
+                        });
+                        window.location.href = "game.html";
+                    } catch (error) {
+                        console.error(error);
+                        alert("Error al guardar perfil.");
+                        launchBtn.disabled = false;
+                    }
+                });
             });
         }
-
-        // Redirección final al juego
-        document.getElementById("btn-launch").addEventListener("click", () => {
-            window.location.href = "game.html";
-        });
     </script>
 </body>
 </html>
