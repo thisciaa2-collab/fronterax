@@ -3,163 +3,285 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Frontera-X | Sala Principal</title>
+    <title>Frontera-X | Lobby Oficial</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght=400;600;700;900&family=JetBrains+Mono:wght=700&display=swap" rel="stylesheet">
     
     <style>
         :root {
-            --bg-glass: rgba(10, 14, 26, 0.65);
-            --border-glass: rgba(255, 255, 255, 0.12);
+            --bg-dark: #05070b;
+            --bg-glass: rgba(10, 14, 26, 0.85);
+            --border-glass: rgba(255, 255, 255, 0.08);
             --accent: #00ffcc;
+            --accent-purple: #9d4edd;
             --accent-yellow: #ffcc00;
             --text-light: #ffffff;
+            --text-muted: #94a3b8;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
 
         body { 
-            margin: 0; overflow: hidden; background-color: #06080c; 
-            font-family: 'Inter', sans-serif; width: 100vw; height: 100vh;
+            background-color: var(--bg-dark); 
+            font-family: 'Inter', sans-serif; 
+            color: var(--text-light);
+            min-height: 100vh;
+            overflow: hidden;
+            position: relative;
         }
 
-        .hud-overlay {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none; z-index: 10; display: flex;
-            flex-direction: column; justify-content: space-between; padding: 20px;
+        /* --- CONTENEDOR PRINCIPAL INTERFAZ ORIGINAL (image_ac8655.png) --- */
+        .lobby-ui {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            padding: 25px 40px; display: flex; flex-direction: column;
+            justify-content: space-between; z-index: 10; pointer-events: none;
         }
-        .interactive { pointer-events: auto; }
+        .lobby-ui * { pointer-events: auto; }
 
-        .top-bar { display: flex; justify-content: space-between; align-items: flex-start; width: 100%; }
-
-        .user-profile {
-            background: var(--bg-glass); border: 1px solid var(--border-glass);
-            backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-            padding: 10px 20px; border-radius: 12px; display: flex; align-items: center; gap: 14px;
-        }
-
-        .avatar-box {
-            width: 44px; height: 44px; background: linear-gradient(135deg, var(--accent) 0%, #006655 100%);
-            border-radius: 8px; display: flex; align-items: center; justify-content: center;
-            font-weight: 900; font-size: 20px; color: #000;
-        }
-
-        .user-info { display: flex; flex-direction: column; }
-        .user-name { font-size: 15px; font-weight: 700; color: var(--text-light); }
-        .user-id { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--accent); margin-top: 2px; }
-
-        .resources { display: flex; gap: 12px; }
-        .resource-item {
-            background: var(--bg-glass); border: 1px solid var(--border-glass); backdrop-filter: blur(16px);
-            padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 700; color: #fff;
-            display: flex; align-items: center; gap: 8px;
-        }
-        .resource-item.gold span { color: var(--accent-yellow); }
-        .resource-item.diamonds span { color: #00bfff; }
-
-        .main-body { display: flex; justify-content: space-between; align-items: center; flex-grow: 1; width: 100%; }
-        .main-body .side-menu { display: flex; flex-direction: column; gap: 10px; }
-
-        .side-btn {
-            background: var(--bg-glass); border: 1px solid var(--border-glass); backdrop-filter: blur(10px);
-            color: #cbd5e1; padding: 14px 24px; border-radius: 10px; font-size: 13px; font-weight: 700;
-            text-transform: uppercase; cursor: pointer; min-width: 180px; text-align: left;
-            transition: all 0.2s ease;
-        }
-        .side-btn:hover { color: #fff; border-color: var(--accent); transform: translateX(6px); background: rgba(0, 255, 204, 0.15); }
-
-        .bottom-bar { display: flex; justify-content: space-between; align-items: flex-end; width: 100%; }
-
-        .bottom-nav {
-            display: flex; gap: 10px; background: rgba(5, 7, 12, 0.6);
-            padding: 6px; border-radius: 12px; border: 1px solid var(--border-glass); backdrop-filter: blur(10px);
-        }
-        .nav-item { padding: 10px 20px; color: #94a3b8; font-size: 11px; font-weight: 700; text-transform: uppercase; cursor: pointer; }
-        .nav-item:hover { color: var(--accent); }
-
-        .start-panel { display: flex; flex-direction: column; gap: 10px; align-items: flex-end; }
-        .mode-selector {
-            background: var(--bg-glass); border: 1px solid var(--border-glass); backdrop-filter: blur(12px);
-            padding: 12px 24px; border-radius: 12px; text-align: right; min-width: 220px; cursor: pointer;
-        }
-        .mode-title { font-size: 14px; font-weight: 800; color: #fff; text-transform: uppercase; }
-        .map-sub { font-size: 11px; color: var(--accent); font-weight: 600; text-transform: uppercase; }
-
-        .start-btn {
-            background: linear-gradient(135deg, #ffcc00 0%, #ff9900 100%); border: none; color: #000;
-            padding: 18px 60px; border-radius: 12px; font-size: 22px; font-weight: 900; cursor: pointer;
-            box-shadow: 0 6px 25px rgba(255, 153, 0, 0.4); text-transform: uppercase;
-        }
-
-        #game-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
+        /* SECCIÓN SUPERIOR */
+        .top-section { display: flex; justify-content: space-between; align-items: flex-start; }
         
-        #loading-screen {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #06080c;
-            z-index: 999; display: flex; flex-direction: column; justify-content: center; align-items: center;
-            font-family: 'JetBrains Mono', monospace; color: var(--accent); font-size: 14px; gap: 10px;
+        /* Perfil de Jugador Superior Izquierda */
+        .player-profile-box {
+            background: rgba(6, 9, 16, 0.6); border: 1px solid var(--border-glass);
+            border-radius: 12px; padding: 12px 20px 12px 65px; position: relative; min-width: 180px;
         }
-        .progress-bar-container { width: 250px; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden; margin-top: 5px; }
-        .progress-bar-fill { width: 0%; height: 100%; background: var(--accent); transition: width 0.1s ease; }
+        .player-level {
+            position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+            width: 40px; height: 40px; background: #00ffcc; border-radius: 8px;
+            color: #000; font-weight: 900; display: flex; align-items: center; justify-content: center; font-size: 18px;
+        }
+        .player-name { font-size: 15px; font-weight: 900; color: #fff; letter-spacing: 0.5px; }
+        .player-id { font-size: 11px; color: #00ffcc; font-family: 'JetBrains Mono', monospace; margin-top: 2px; }
+
+        /* Divisas Superior Derecha */
+        .currencies-container { display: flex; gap: 15px; }
+        .currency-pill {
+            background: rgba(6, 9, 16, 0.7); border: 1px solid var(--border-glass);
+            padding: 8px 16px; border-radius: 20px; font-weight: 700; font-size: 13px;
+            display: flex; align-items: center; gap: 6px;
+        }
+        .currency-pill.gold span { color: var(--accent-yellow); }
+        .currency-pill.diamonds span { color: #00bfff; }
+
+        /* SECCIÓN CENTRAL (MENÚ LATERAL IZQUIERDO) */
+        .middle-section { display: flex; align-items: center; flex-grow: 1; }
+        .left-menu { display: flex; flex-direction: column; gap: 12px; width: 180px; }
+        
+        .btn-menu-left {
+            background: rgba(10, 14, 26, 0.5); border: 1px solid var(--border-glass);
+            color: #fff; font-size: 12px; font-weight: 800; text-transform: uppercase;
+            padding: 14px 20px; border-radius: 8px; text-align: left; cursor: pointer;
+            transition: all 0.2s; letter-spacing: 1px; display: flex; align-items: center; gap: 10px;
+        }
+        .btn-menu-left:hover { border-color: #fff; background: rgba(255,255,255,0.04); transform: translateX(4px); }
+
+        /* SECCIÓN INFERIOR */
+        .bottom-section { display: flex; justify-content: space-between; align-items: flex-end; }
+        
+        /* Botones Esquina Inferior Izquierda */
+        .bottom-left-group { display: flex; gap: 10px; background: rgba(6, 9, 16, 0.5); padding: 8px; border-radius: 10px; border: 1px solid var(--border-glass); }
+        .btn-bottom-mini {
+            background: transparent; border: none; color: var(--text-muted); font-size: 11px;
+            font-weight: 700; text-transform: uppercase; padding: 8px 14px; cursor: pointer;
+            transition: color 0.2s; display: flex; align-items: center; gap: 6px;
+        }
+        .btn-bottom-mini:hover { color: #fff; }
+        /* Destacar botón de Preset pedido */
+        .btn-bottom-mini.preset-trigger { color: var(--accent-purple); font-weight: 800; }
+        .btn-bottom-mini.preset-trigger:hover { color: #d69fff; }
+
+        /* Matchmaking Esquina Inferior Derecha */
+        .match-control-box { display: flex; flex-direction: column; align-items: flex-end; gap: 12px; }
+        .mode-indicator {
+            background: rgba(6, 9, 16, 0.7); padding: 10px 20px; border-radius: 8px;
+            border: 1px solid var(--border-glass); text-align: right; min-width: 220px;
+        }
+        .mode-title { font-size: 13px; font-weight: 900; text-transform: uppercase; color: #fff; letter-spacing: 0.5px; }
+        .mode-map { font-size: 10px; font-weight: 700; color: var(--accent); text-transform: uppercase; margin-top: 2px; }
+
+        .btn-start-game {
+            background: linear-gradient(180deg, #ffb700 0%, #ff8800 100%);
+            border: none; color: #000; width: 220px; padding: 18px; border-radius: 10px;
+            font-size: 22px; font-weight: 900; text-transform: uppercase; cursor: pointer;
+            box-shadow: 0 4px 15px rgba(255, 136, 0, 0.3); transition: transform 0.1s, opacity 0.2s;
+            text-align: center; letter-spacing: 1px;
+        }
+        .btn-start-game:hover { transform: scale(1.02); opacity: 0.95; }
+        .btn-start-game:active { transform: scale(0.98); }
+
+
+        /* --- 📌 MODAL DE PRESETS (MECÁNICA SOLICITADA) --- */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(10px);
+            display: none; justify-content: center; align-items: center; z-index: 1000;
+        }
+
+        .preset-modal {
+            background: var(--bg-glass); border: 1px solid var(--border-glass);
+            width: 820px; max-width: 95%; border-radius: 16px; display: grid;
+            grid-template-columns: 200px 1fr; overflow: hidden;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.7);
+        }
+
+        .preset-sidebar {
+            background: rgba(4, 6, 10, 0.6); border-right: 1px solid var(--border-glass);
+            padding: 20px; display: flex; flex-direction: column; gap: 10px;
+        }
+        .sidebar-title { font-size: 12px; font-weight: 900; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px; letter-spacing: 1px; }
+        
+        .preset-tab {
+            background: rgba(255,255,255,0.02); border: 1px solid transparent;
+            color: var(--text-muted); padding: 12px 16px; border-radius: 8px; text-align: left;
+            font-size: 13px; font-weight: 700; cursor: pointer; transition: all 0.2s;
+        }
+        .preset-tab:hover { background: rgba(255,255,255,0.04); color: #fff; }
+        .preset-tab.active {
+            background: rgba(157, 78, 221, 0.12); border-color: var(--accent-purple); color: #fff;
+        }
+
+        .preset-content { padding: 30px; display: flex; flex-direction: column; justify-content: space-between; }
+        .content-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+        .content-header h3 { font-size: 18px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.5px; }
+        .close-modal { font-size: 24px; color: var(--text-muted); cursor: pointer; transition: color 0.2s; }
+        .close-modal:hover { color: #ff4a4a; }
+
+        .slots-grid { display: flex; flex-direction: column; gap: 18px; }
+        .slot-box {
+            background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.04);
+            padding: 14px; border-radius: 10px; display: flex; flex-direction: column; gap: 8px;
+        }
+        .slot-box.usable-slot { border-left: 4px solid var(--accent); }
+        .slot-box.ayudable-slot { border-left: 4px solid var(--accent-purple); }
+
+        .slot-label { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
+        .slot-box.usable-slot .slot-label { color: var(--accent); }
+        .slot-box.ayudable-slot .slot-label { color: var(--accent-purple); }
+
+        select {
+            background: #0b0e14; border: 1px solid var(--border-glass); color: #fff;
+            padding: 10px; border-radius: 6px; font-size: 13px; font-weight: 600; outline: none;
+            width: 100%; cursor: pointer;
+        }
+        .ayudables-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+
+        .btn-save-preset {
+            background: #fff; border: none; color: #000; padding: 14px; border-radius: 8px;
+            font-size: 13px; font-weight: 900; text-transform: uppercase; cursor: pointer;
+            width: 100%; margin-top: 20px; transition: background 0.2s; letter-spacing: 0.5px;
+        }
+        .btn-save-preset:hover { background: var(--accent); }
     </style>
 </head>
 <body>
 
-    <div id="loading-screen">
-        <span id="loading-msg">SINCROZANIZANDO MUNDO 3D...</span>
-        <div class="progress-bar-container">
-            <div class="progress-bar-fill" id="load-progress"></div>
+    <!-- INTERFAZ HUD DEL LOBBY RESTAURADA -->
+    <div class="lobby-ui">
+        
+        <!-- PARTE SUPERIOR -->
+        <div class="top-section">
+            <div class="player-profile-box">
+                <div class="player-level" id="lobby-level">1</div>
+                <div class="player-name" id="lobby-username">Cargando...</div>
+                <div class="player-id" id="lobby-id">ID: ----------</div>
+            </div>
+
+            <div class="currencies-container">
+                <div class="currency-pill gold">🪙 <span id="lobby-gold">0</span></div>
+                <div class="currency-pill diamonds">💎 <span id="lobby-diamonds">0</span></div>
+            </div>
+        </div>
+
+        <!-- PARTE CENTRAL (MENÚ IZQUIERDO ORIGINAL) -->
+        <div class="middle-section">
+            <div class="left-menu">
+                <button class="btn-menu-left" onclick="window.location.href='store.html'">🛒 Tienda</button>
+                <button class="btn-menu-left" onclick="alert('Luck Royale próximamente')">🎯 Luck Royale</button>
+                <button class="btn-menu-left" onclick="alert('Pase Booyah próximamente')">🎫 Pase Booyah</button>
+                <button class="btn-menu-left" onclick="window.location.href='inbox.html'">📬 Misiones / Inbox</button>
+            </div>
+        </div>
+
+        <!-- PARTE INFERIOR -->
+        <div class="bottom-section">
+            <!-- Botones esquina inferior izquierda + Botón Preset integrado -->
+            <div class="bottom-left-group">
+                <button class="btn-bottom-mini" onclick="alert('Abriendo Vault...')">📦 Vault</button>
+                <button class="btn-bottom-mini" onclick="alert('Abriendo Weapons...')">🔫 Weapon</button>
+                <!-- Botón solicitado ejecutando javascript:() de apertura -->
+                <button class="btn-bottom-mini preset-trigger" onclick="openPresetModal()">🛠 Preset</button>
+            </div>
+
+            <!-- Matchmaking e Inicio -->
+            <div class="match-control-box">
+                <div class="mode-indicator">
+                    <div class="mode-title">Clasificatoria BOT</div>
+                    <div class="mode-map">Mapa: Bermudas</div>
+                </div>
+                <button class="btn-start-game" onclick="alert('¡Buscando emparejamiento!')">START</button>
+            </div>
+        </div>
+
+    </div>
+
+
+    <!-- 📌 CAPA INTERACTIVA DEL MODAL DE PRESETS -->
+    <div class="modal-overlay" id="presetModalOverlay">
+        <div class="preset-modal">
+            
+            <!-- Lateral: Pestañas de Preset 1 a 5 -->
+            <div class="preset-sidebar">
+                <div class="sidebar-title">Presets</div>
+                <button class="preset-tab active" onclick="switchPresetTab(1)">Preset 1</button>
+                <button class="preset-tab" onclick="switchPresetTab(2)">Preset 2</button>
+                <button class="preset-tab" onclick="switchPresetTab(3)">Preset 3</button>
+                <button class="preset-tab" onclick="switchPresetTab(4)">Preset 4</button>
+                <button class="preset-tab" onclick="switchPresetTab(5)">Preset 5</button>
+            </div>
+
+            <!-- Panel de Personalización -->
+            <div class="preset-content">
+                <div>
+                    <div class="content-header">
+                        <h3 id="active-preset-title">Configurar Preset 1</h3>
+                        <span class="close-modal" onclick="closePresetModal()">&times;</span>
+                    </div>
+
+                    <div class="slots-grid">
+                        <!-- SLOT USABLE (MÁXIMO 1) -->
+                        <div class="slot-box usable-slot">
+                            <div class="slot-label">Habilidad Usable (Máx 1)</div>
+                            <select id="select-usable">
+                                <option value="">Ninguno</option>
+                            </select>
+                        </div>
+
+                        <!-- SLOTS AYUDABLES (MÁXIMO 3) -->
+                        <div class="slot-box ayudable-slot">
+                            <div class="slot-label">Habilidades Ayudables (Máx 3)</div>
+                            <div class="ayudables-row">
+                                <select id="select-ayudable-1"><option value="">Vacío</option></select>
+                                <select id="select-ayudable-2"><option value="">Vacío</option></select>
+                                <select id="select-ayudable-3"><option value="">Vacío</option></select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="btn-save-preset" onclick="saveActivePresetToServer()">Guardar Equipamiento</button>
+            </div>
+
         </div>
     </div>
-    
-    <div id="game-canvas"></div>
 
-    <div class="hud-overlay">
-        <div class="top-bar">
-            <div class="user-profile interactive">
-                <div class="avatar-box" id="avatar-letter">-</div>
-                <div class="user-info">
-                    <span class="user-name" id="profile-name">Cargando...</span>
-                    <span class="user-id" id="profile-id">ID: ---------</span>
-                </div>
-            </div>
-            <div class="resources interactive">
-                <div class="resource-item gold">🪙 <span id="val-gold">0</span></div>
-                <div class="resource-item diamonds">💎 <span id="val-diamonds">0</span></div>
-            </div>
-        </div>
 
-        <div class="main-body">
-            <div class="side-menu interactive">
-                <button class="side-btn" onclick="window.location.href='store.html'">🛒 Tienda</button>
-                <button class="side-btn">🎯 Luck Royale</button>
-                <button class="side-btn">🎫 Pase Booyah</button>
-                <button class="side-btn">📋 Misiones</button>
-            </div>
-        </div>
-
-        <div class="bottom-bar">
-            <div class="bottom-nav interactive">
-                <div class="nav-item">📦 Vault</div>
-                <div class="nav-item">🔫 Weapon</div>
-            </div>
-            <div class="start-panel interactive">
-                <div class="mode-selector">
-                    <div class="mode-title">Clasificatoria Bot</div>
-                    <div class="map-sub">Mapa: Bermudas</div>
-                </div>
-                <button class="start-btn">START</button>
-            </div>
-        </div>
-    </div>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
-
+    <!-- CONFIGURACIÓN MOTOR DE BASE DE DATOS -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
-        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDeUPVDX40AFX-W_crtUWm0TsXS2smx1zo",
@@ -174,141 +296,113 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // --- ENTORNO THREE.JS (Declaraciones iniciales ordenadas correctamente) ---
-        const scene = new THREE.Scene();
-        
-        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
-        camera.position.set(0, 1.4, 3.0);
-        camera.lookAt(0, 1.0, 0);
+        let currentUserDocRef = null;
+        let misPersonajes = [];
+        let currentPresetIndex = 1;
 
-        const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-        document.getElementById('game-canvas').appendChild(renderer.domElement);
-
-        scene.add(new THREE.AmbientLight(0xffffff, 0.85));
-        const light = new THREE.DirectionalLight(0xffffff, 0.9);
-        light.position.set(4, 10, 6);
-        scene.add(light);
-
-        // Variables globales para el control de animación y música
-        let mixer = null;
-        const clock = new THREE.Clock();
-        
-        const audioListener = new THREE.AudioListener();
-        camera.add(audioListener); // Arreglado: 'camera' ya está inicializado arriba
-        
-        const backgroundMusic = new THREE.Audio(audioListener);
-        let musicStarted = false;
-
-        function startLobbyMusic() {
-            if (musicStarted) return;
-            
-            const audioLoader = new THREE.AudioLoader();
-            audioLoader.load('./LobbyMusic.wav', (buffer) => {
-                backgroundMusic.setBuffer(buffer);
-                backgroundMusic.setLoop(true);
-                backgroundMusic.setVolume(0.4);
-                backgroundMusic.play();
-                musicStarted = true;
-                
-                window.removeEventListener('click', startLobbyMusic);
-                window.removeEventListener('touchstart', startLobbyMusic);
-            }, undefined, (err) => {
-                console.error("Error al cargar LobbyMusic.wav:", err);
-            });
-        }
-
-        window.addEventListener('click', startLobbyMusic);
-        window.addEventListener('touchstart', startLobbyMusic);
+        let todosLosPresets = {
+            preset1: { usable: "", ayudables: ["", "", ""] },
+            preset2: { usable: "", ayudables: ["", "", ""] },
+            preset3: { usable: "", ayudables: ["", "", ""] },
+            preset4: { usable: "", ayudables: ["", "", ""] },
+            preset5: { usable: "", ayudables: ["", "", ""] }
+        };
 
         onAuthStateChanged(auth, async (user) => {
             if (!user) {
                 window.location.replace("../index.html");
             } else {
-                const docSnap = await getDoc(doc(db, "usuarios", user.uid));
+                currentUserDocRef = doc(db, "usuarios", user.uid);
+                const docSnap = await getDoc(currentUserDocRef);
+                
                 if (docSnap.exists()) {
-                    const d = docSnap.data();
-                    document.getElementById("profile-name").textContent = d.username;
-                    document.getElementById("profile-id").textContent = "ID: " + d.gameId;
-                    document.getElementById("avatar-letter").textContent = d.username.charAt(0).toUpperCase();
-                    document.getElementById("val-gold").textContent = Number(d.oro).toLocaleString();
-                    document.getElementById("val-diamonds").textContent = d.diamantes;
+                    const data = docSnap.data();
+                    // Inyectar datos en HUD original
+                    document.getElementById("lobby-username").textContent = data.username || "Jugador";
+                    document.getElementById("lobby-id").textContent = `ID: ${data.gameId || "106524103"}`;
+                    document.getElementById("lobby-gold").textContent = Number(data.oro || 0).toLocaleString();
+                    document.getElementById("lobby-diamonds").textContent = data.diamantes || 0;
+                    if(data.nivel) document.getElementById("lobby-level").textContent = data.nivel;
                     
-                    loadCharacterModel();
+                    misPersonajes = data.personajes || [];
+                    if (data.presets) todosLosPresets = data.presets;
+
+                    poblarSelectoresHabilidades();
                 }
             }
         });
 
-        function loadCharacterModel() {
-            const loader = new THREE.GLTFLoader();
-            
-            // 🚀 TU NUEVO PERSONAJE ANIMADO DE MIXAMO CONVERTIDO A GLB DIRECTO
-            const urlFinal = "https://dl.dropboxusercontent.com/scl/fi/coqtz064191supz8vv7e4/Defeated.glb?rlkey=ioica9w27zaxr84wr78aep09z&st=8ivgs82k";
+        function poblarSelectoresHabilidades() {
+            const selectUsable = document.getElementById("select-usable");
+            const selectAyudable1 = document.getElementById("select-ayudable-1");
+            const selectAyudable2 = document.getElementById("select-ayudable-2");
+            const selectAyudable3 = document.getElementById("select-ayudable-3");
 
-            loader.load(urlFinal, (gltf) => {
-                const character = gltf.scene;
-                
-                character.traverse((child) => {
-                    if (child.isMesh && child.material) {
-                        const materials = Array.isArray(child.material) ? child.material : [child.material];
-                        materials.forEach((mat) => {
-                            if (mat.map) mat.map.minFilter = THREE.LinearFilter;
-                            if (mat.normalMap) mat.normalMap.minFilter = THREE.LinearFilter;
-                        });
-                    }
-                });
+            selectUsable.innerHTML = '<option value="">Ninguno</option>';
+            const defaultAyudable = '<option value="">Vacío</option>';
+            selectAyudable1.innerHTML = defaultAyudable;
+            selectAyudable2.innerHTML = defaultAyudable;
+            selectAyudable3.innerHTML = defaultAyudable;
 
-                character.position.set(0, 0, 0);
-                character.scale.set(1.1, 1.1, 1.1);
-                scene.add(character);
+            if (misPersonajes.includes("Tamaki")) {
+                selectUsable.innerHTML += `<option value="Tamaki">Tamaki</option>`;
+            }
+            if (misPersonajes.includes("Tivet")) {
+                const opt = `<option value="Tivet">Tivet</option>`;
+                selectAyudable1.innerHTML += opt; selectAyudable2.innerHTML += opt; selectAyudable3.innerHTML += opt;
+            }
+            if (misPersonajes.includes("Gallet")) {
+                const opt = `<option value="Gallet">Gallet</option>`;
+                selectAyudable1.innerHTML += opt; selectAyudable2.innerHTML += opt; selectAyudable3.innerHTML += opt;
+            }
+        }
 
-                // Activador automático para la pista de Mixamo
-                if (gltf.animations && gltf.animations.length > 0) {
-                    mixer = new THREE.AnimationMixer(character);
-                    const action = mixer.clipAction(gltf.animations[0]);
-                    action.play();
-                }
-                
-                document.getElementById("loading-screen").style.display = "none";
-                startLobbyMusic();
+        window.openPresetModal = function() {
+            document.getElementById("presetModalOverlay").style.display = "flex";
+            switchPresetTab(1);
+        };
 
-                function rotateModel() {
-                    requestAnimationFrame(rotateModel);
-                    character.rotation.y += 0.004;
-                }
-                rotateModel();
+        window.closePresetModal = function() {
+            document.getElementById("presetModalOverlay").style.display = "none";
+        };
 
-            }, (xhr) => {
-                // Arreglado: Ya no da error de inicialización porque no depende de 'mixer' para calcular la barra
-                if (xhr.total > 0) {
-                    const percent = (xhr.loaded / xhr.total) * 100;
-                    document.getElementById("load-progress").style.width = percent + "%";
-                }
-            }, (err) => {
-                console.error("Error cargando desde el CDN directo:", err);
-                document.getElementById("loading-screen").style.display = "none";
+        window.switchPresetTab = function(num) {
+            currentPresetIndex = num;
+            const tabs = document.querySelectorAll('.preset-tab');
+            tabs.forEach((tab, index) => {
+                if (index === (num - 1)) tab.classList.add('active');
+                else tab.classList.remove('active');
             });
-        }
 
-        function renderLoop() {
-            requestAnimationFrame(renderLoop);
-            
-            if (mixer) {
-                const delta = clock.getDelta();
-                mixer.update(delta);
+            document.getElementById("active-preset-title").textContent = `Configurar Preset ${num}`;
+            const configActual = todosLosPresets[`preset${num}`];
+
+            document.getElementById("select-usable").value = configActual.usable || "";
+            document.getElementById("select-ayudable-1").value = configActual.ayudables[0] || "";
+            document.getElementById("select-ayudable-2").value = configActual.ayudables[1] || "";
+            document.getElementById("select-ayudable-3").value = configActual.ayudables[2] || "";
+        };
+
+        window.saveActivePresetToServer = async function() {
+            if (!currentUserDocRef) return;
+
+            const pKey = `preset${currentPresetIndex}`;
+            todosLosPresets[pKey] = {
+                usable: document.getElementById("select-usable").value,
+                ayudables: [
+                    document.getElementById("select-ayudable-1").value,
+                    document.getElementById("select-ayudable-2").value,
+                    document.getElementById("select-ayudable-3").value
+                ]
+            };
+
+            try {
+                await updateDoc(currentUserDocRef, { presets: todosLosPresets });
+                alert(`¡Preset ${currentPresetIndex} guardado con éxito!`);
+            } catch (err) {
+                console.error("Error:", err);
             }
-
-            renderer.setClearColor(0x070a14);
-            renderer.render(scene, camera);
-        }
-        renderLoop();
-
-        window.addEventListener('resize', () => {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        });
+        };
     </script>
 </body>
 </html>
