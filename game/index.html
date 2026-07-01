@@ -59,7 +59,7 @@
         .resource-item.diamonds span { color: #00bfff; }
 
         .main-body { display: flex; justify-content: space-between; align-items: center; flex-grow: 1; width: 100%; }
-        .side-menu { display: flex; flex-direction: column; gap: 10px; }
+        .main-body .side-menu { display: flex; flex-direction: column; gap: 10px; }
 
         .side-btn {
             background: var(--bg-glass); border: 1px solid var(--border-glass); backdrop-filter: blur(10px);
@@ -174,8 +174,30 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // --- SISTEMA DE AUDIO NATIVO DE THREE.JS ---
+        // --- ENTORNO THREE.JS (Declaraciones iniciales ordenadas correctamente) ---
+        const scene = new THREE.Scene();
+        
+        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(0, 1.4, 3.0);
+        camera.lookAt(0, 1.0, 0);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        document.getElementById('game-canvas').appendChild(renderer.domElement);
+
+        scene.add(new THREE.AmbientLight(0xffffff, 0.85));
+        const light = new THREE.DirectionalLight(0xffffff, 0.9);
+        light.position.set(4, 10, 6);
+        scene.add(light);
+
+        // Variables globales para el control de animación y música
+        let mixer = null;
+        const clock = new THREE.Clock();
+        
         const audioListener = new THREE.AudioListener();
+        camera.add(audioListener); // Arreglado: 'camera' ya está inicializado arriba
+        
         const backgroundMusic = new THREE.Audio(audioListener);
         let musicStarted = false;
 
@@ -183,23 +205,20 @@
             if (musicStarted) return;
             
             const audioLoader = new THREE.AudioLoader();
-            // Ruta relativa hacia tu archivo de sonido alojado en tu servidor local/producción
             audioLoader.load('./LobbyMusic.wav', (buffer) => {
                 backgroundMusic.setBuffer(buffer);
                 backgroundMusic.setLoop(true);
-                backgroundMusic.setVolume(0.4); // Volumen equilibrado al 40%
+                backgroundMusic.setVolume(0.4);
                 backgroundMusic.play();
                 musicStarted = true;
                 
-                // Limpiamos los eventos globales una vez que arranca para liberar memoria
                 window.removeEventListener('click', startLobbyMusic);
                 window.removeEventListener('touchstart', startLobbyMusic);
             }, undefined, (err) => {
-                console.error("Error al cargar el archivo de audio LobbyMusic.wav:", err);
+                console.error("Error al cargar LobbyMusic.wav:", err);
             });
         }
 
-        // Eventos de interacción física para ganarle al bloqueo de Autoplay del navegador
         window.addEventListener('click', startLobbyMusic);
         window.addEventListener('touchstart', startLobbyMusic);
 
@@ -221,31 +240,11 @@
             }
         });
 
-        // --- ENTORNO THREE.JS ---
-        const scene = new THREE.Scene();
-        // Vinculamos el detector de audio a la cámara del juego
-        camera.add(audioListener);
-
-        scene.add(new THREE.AmbientLight(0xffffff, 0.85));
-        const light = new THREE.DirectionalLight(0xffffff, 0.9);
-        light.position.set(4, 10, 6);
-        scene.add(light);
-
-        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
-        camera.position.set(0, 1.4, 3.0);
-        camera.lookAt(0, 1.0, 0);
-
-        const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-        document.getElementById('game-canvas').appendChild(renderer.domElement);
-
-        let mixer = null;
-        const clock = new THREE.Clock();
-
         function loadCharacterModel() {
             const loader = new THREE.GLTFLoader();
-            const urlFinal = "https://dl.dropboxusercontent.com/scl/fi/l1mn0t9arcqsa5cs7d2gq/Ch06_nonPBR.glb?rlkey=bn8cubv67qyt7xvtej02733qc&st=u1r9ro4p";
+            
+            // 🚀 TU NUEVO PERSONAJE ANIMADO DE MIXAMO CONVERTIDO A GLB DIRECTO
+            const urlFinal = "https://dl.dropboxusercontent.com/scl/fi/coqtz064191supz8vv7e4/Defeated.glb?rlkey=ioica9w27zaxr84wr78aep09z&st=8ivgs82k";
 
             loader.load(urlFinal, (gltf) => {
                 const character = gltf.scene;
@@ -264,6 +263,7 @@
                 character.scale.set(1.1, 1.1, 1.1);
                 scene.add(character);
 
+                // Activador automático para la pista de Mixamo
                 if (gltf.animations && gltf.animations.length > 0) {
                     mixer = new THREE.AnimationMixer(character);
                     const action = mixer.clipAction(gltf.animations[0]);
@@ -271,8 +271,6 @@
                 }
                 
                 document.getElementById("loading-screen").style.display = "none";
-                
-                // Intentamos activar la música aquí también por si el usuario ya interactuó con la interfaz previa
                 startLobbyMusic();
 
                 function rotateModel() {
@@ -282,6 +280,7 @@
                 rotateModel();
 
             }, (xhr) => {
+                // Arreglado: Ya no da error de inicialización porque no depende de 'mixer' para calcular la barra
                 if (xhr.total > 0) {
                     const percent = (xhr.loaded / xhr.total) * 100;
                     document.getElementById("load-progress").style.width = percent + "%";
