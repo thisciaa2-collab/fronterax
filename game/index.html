@@ -211,9 +211,9 @@
         function loadCharacterModel() {
             const loader = new THREE.GLTFLoader();
             
-            // Usamos un puente proxy público que no requiere activación manual por el usuario para evitar el bloqueo CORS
-            const dropboxUrl = "https://www.dropbox.com/scl/fi/l1mn0t9arcqsa5cs7d2gq/Ch06_nonPBR.glb?rlkey=bn8cubv67qyt7xvtej02733qc&st=u1r9ro4p&dl=1";
-            const urlFinal = "https://api.allorigins.win/raw?url=" + encodeURIComponent(dropboxUrl);
+            // 🚀 SOLUCIÓN DEFINITIVA: Convertimos tu URL a dominio de contenido crudo puro ('dl.dropboxusercontent.com')
+            // Esto entrega el archivo al instante, sin redirecciones pesadas y con CORS totalmente ABIERTO por defecto.
+            const urlFinal = "https://dl.dropboxusercontent.com/scl/fi/l1mn0t9arcqsa5cs7d2gq/Ch06_nonPBR.glb?rlkey=bn8cubv67qyt7xvtej02733qc&st=u1r9ro4p";
 
             loader.load(urlFinal, (gltf) => {
                 const character = gltf.scene;
@@ -246,7 +246,7 @@
                     document.getElementById("load-progress").style.width = percent + "%";
                 }
             }, (err) => {
-                console.error("Error cargando desde el CDN:", err);
+                console.error("Error cargando desde el CDN directo:", err);
                 document.getElementById("loading-screen").style.display = "none";
             });
         }
