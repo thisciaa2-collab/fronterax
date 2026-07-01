@@ -6,7 +6,7 @@
     <title>Frontera-X | Sala Principal</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght=400;600;700;900&family=JetBrains+Mono:wght=700&display=swap" rel="stylesheet">
     
     <style>
         :root {
@@ -106,7 +106,7 @@
 <body>
 
     <div id="loading-screen">
-        <span id="loading-msg">CONECTANDO E IMPORTANDO AGENTE...</span>
+        <span id="loading-msg">SINCROZANIZANDO MUNDO 3D...</span>
         <div class="progress-bar-container">
             <div class="progress-bar-fill" id="load-progress"></div>
         </div>
@@ -191,7 +191,7 @@
             }
         });
 
-        // --- ENTORNO GRÁFICO THREE.JS ---
+        // --- ENTORNO THREE.JS ---
         const scene = new THREE.Scene();
         scene.add(new THREE.AmbientLight(0xffffff, 0.85));
         const light = new THREE.DirectionalLight(0xffffff, 0.9);
@@ -210,13 +210,13 @@
         function loadCharacterModel() {
             const loader = new THREE.GLTFLoader();
             
-            // URL Directa inyectada desde tu CDN de Discord
-            const urlModeloCDN = "https://cdn.discordapp.com/attachments/1521634086723260620/1521646749498736750/Ch06_nonPBR.glb?ex=6a459777&is=6a4445f7&hm=42d678432f7effbfa8b8af7db6b85eee76b5b74f43820b11551b605b8ee8ece8&"; 
+            // Tu enlace directo verificado de Dropbox
+            const urlDropbox = "https://www.dropbox.com/scl/fi/l1mn0t9arcqsa5cs7d2gq/Ch06_nonPBR.glb?rlkey=bn8cubv67qyt7xvtej02733qc&st=u1r9ro4p&dl=1"; 
 
-            loader.load(urlModeloCDN, (gltf) => {
+            loader.load(urlDropbox, (gltf) => {
                 const character = gltf.scene;
                 
-                // Configuración interna anti-lag para procesar las texturas masivas sin colapsar el VRAM
+                // Forzamos el LinearFilter para reducir drásticamente el peso de texturas 4K en VRAM
                 character.traverse((child) => {
                     if (child.isMesh && child.material) {
                         const materials = Array.isArray(child.material) ? child.material : [child.material];
@@ -235,7 +235,7 @@
                 
                 function animateModel() {
                     requestAnimationFrame(animateModel);
-                    character.rotation.y += 0.004; // Rotación lenta en el Lobby
+                    character.rotation.y += 0.004;
                 }
                 animateModel();
 
@@ -245,7 +245,7 @@
                     document.getElementById("load-progress").style.width = percent + "%";
                 }
             }, (err) => {
-                console.error("Error al cargar desde el CDN de Discord:", err);
+                console.error("Error cargando desde el CDN de Dropbox:", err);
                 document.getElementById("loading-screen").style.display = "none";
             });
         }
