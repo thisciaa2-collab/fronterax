@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Frontera-X | Tienda de Personajes</title>
+    <title>Frontera-X | Tienda por Categorías</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght=400;600;700;900&family=JetBrains+Mono:wght=700&display=swap" rel="stylesheet">
@@ -33,11 +33,6 @@
         .bg-glow {
             position: fixed; top: -10%; left: -10%; width: 50%; height: 50%;
             background: radial-gradient(circle, rgba(0, 255, 204, 0.08) 0%, transparent 70%);
-            z-index: -1; pointer-events: none;
-        }
-        .bg-glow-right {
-            position: fixed; bottom: -10%; right: -10%; width: 50%; height: 50%;
-            background: radial-gradient(circle, rgba(157, 78, 221, 0.08) 0%, transparent 70%);
             z-index: -1; pointer-events: none;
         }
 
@@ -70,13 +65,37 @@
         .currency-box.gold span { color: var(--accent-yellow); }
         .currency-box.diamonds span { color: #00bfff; }
 
-        .main-container { max-width: 1400px; margin: 40px auto; padding: 0 20px; }
+        .main-container { max-width: 1400px; margin: 30px auto; padding: 0 20px; }
+
+        /* 📌 CONTROLADOR DE CATEGORÍAS (TABS) */
+        .category-tabs {
+            display: flex; gap: 15px; border-bottom: 1px solid rgba(255,255,255,0.08);
+            padding-bottom: 15px; margin-bottom: 30px;
+        }
+        .tab-btn {
+            background: none; border: none; color: var(--text-muted); font-size: 14px;
+            font-weight: 800; text-transform: uppercase; letter-spacing: 1px; padding: 10px 20px;
+            cursor: pointer; transition: all 0.3s ease; position: relative;
+        }
+        .tab-btn:hover { color: #fff; }
+        .tab-btn.active { color: var(--accent); }
+        .tab-btn.active::after {
+            content: ''; position: absolute; bottom: -16px; left: 0; width: 100%; height: 2px;
+            background: var(--accent); box-shadow: 0 0 10px var(--accent);
+        }
+        .tab-btn.tab-ayudable.active { color: var(--accent-purple); }
+        .tab-btn.tab-ayudable.active::after { background: var(--accent-purple); box-shadow: 0 0 10px var(--accent-purple); }
+
+        /* SECCIONES CONTENEDORAS */
+        .category-section { display: none; }
+        .category-section.active { display: block; }
 
         .products-grid {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 25px; margin-top: 20px;
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 25px;
         }
 
+        /* TARJETAS MEJORADAS */
         .character-card {
             background: var(--bg-glass); border: 1px solid var(--border-glass);
             border-radius: 16px; overflow: hidden; backdrop-filter: blur(10px);
@@ -84,66 +103,79 @@
             display: flex; flex-direction: column; position: relative;
         }
         .character-card:hover {
-            transform: translateY(-8px); border-color: var(--accent);
-            box-shadow: 0 10px 30px rgba(0, 255, 204, 0.1);
+            transform: translateY(-5px); border-color: rgba(255,255,255,0.25);
         }
 
         .character-display {
-            width: 100%; height: 260px; background: linear-gradient(180deg, rgba(10,14,26,0) 40%, rgba(6,8,12,1) 100%), #121824;
-            display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden;
+            width: 100%; height: 200px; background: linear-gradient(180deg, rgba(10,14,26,0) 30%, rgba(6,8,12,1) 100%), #121824;
+            display: flex; align-items: center; justify-content: center; position: relative;
         }
         
-        .character-avatar-placeholder {
-            font-size: 64px; font-weight: 900; opacity: 0.15; color: var(--text-light);
-            transition: all 0.3s ease;
-        }
-        .character-card:hover .character-avatar-placeholder { opacity: 0.4; transform: scale(1.1); }
-
-        .rarity-tag {
-            position: absolute; top: 15px; left: 15px; padding: 4px 10px; border-radius: 6px;
-            font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;
-        }
-        .rarity-tag.usable { background: rgba(0, 255, 204, 0.15); border: 1px solid var(--accent); color: var(--accent); }
-        .rarity-tag.ayudable { background: rgba(157, 78, 221, 0.15); border: 1px solid var(--accent-purple); color: var(--accent-purple); }
+        .character-avatar-placeholder { font-size: 48px; font-weight: 900; opacity: 0.2; letter-spacing: 2px; }
 
         .character-details { padding: 20px; display: flex; flex-direction: column; gap: 12px; flex-grow: 1; }
-        .character-name { font-size: 22px; font-weight: 800; text-transform: uppercase; }
-        .character-ability { font-size: 12px; color: var(--text-muted); line-height: 1.5; min-height: 72px; }
+        .character-name { font-size: 24px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.5px; }
+        .character-ability { font-size: 13px; color: var(--text-muted); line-height: 1.5; min-height: 60px; }
 
-        .price-row { display: flex; align-items: center; gap: 12px; margin-top: auto; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.05); }
-        .price-item { font-size: 15px; font-weight: 700; display: flex; align-items: center; gap: 4px; }
+        .price-row { display: flex; align-items: center; gap: 16px; margin-top: auto; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.06); }
+        .price-item { font-size: 14px; font-weight: 700; display: flex; align-items: center; gap: 5px; background: rgba(255,255,255,0.02); padding: 6px 12px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.04); }
         .price-item.gold { color: var(--accent-yellow); }
         .price-item.diamonds { color: #00bfff; }
 
-        .card-actions { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 10px; margin-top: 15px; }
+        .card-actions { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 10px; margin-top: 12px; }
         
         .btn-buy {
-            background: linear-gradient(135deg, var(--accent) 0%, #006655 100%);
-            border: none; color: #000; padding: 12px; border-radius: 8px;
+            background: #fff; border: none; color: #000; padding: 12px; border-radius: 8px;
             font-size: 12px; font-weight: 800; text-transform: uppercase; cursor: pointer;
             transition: all 0.2s ease; text-align: center;
         }
-        .btn-buy:hover:not(:disabled) { opacity: 0.9; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0, 255, 204, 0.2); }
-        .btn-buy:disabled { background: #1e293b; color: #64748b; cursor: not-allowed; border: 1px solid rgba(255,255,255,0.05); }
+        .btn-buy:hover:not(:disabled) { background: var(--accent); transform: translateY(-1px); }
+        .btn-buy:disabled { background: #1e293b; color: #64748b; cursor: not-allowed; }
 
         .btn-gift {
-            background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-glass);
+            background: rgba(255, 255, 255, 0.04); border: 1px solid var(--border-glass);
             color: var(--text-light); padding: 12px; border-radius: 8px;
             font-size: 12px; font-weight: 700; text-transform: uppercase; cursor: pointer;
             transition: all 0.2s ease; text-align: center;
         }
-        .btn-gift:hover { background: rgba(255, 255, 255, 0.1); border-color: var(--accent); color: var(--accent); }
+        .btn-gift:hover { border-color: #fff; }
+
+        /* 📌 MODAL DE PAGO INTEGRADO (FLUIDO Y DISEÑADO) */
+        .modal-payment {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(8px);
+            display: none; justify-content: center; align-items: center; z-index: 2000;
+        }
+        .payment-card {
+            background: #0d111a; border: 1px solid var(--border-glass);
+            width: 420px; border-radius: 16px; padding: 30px; text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+        }
+        .payment-title { font-size: 18px; font-weight: 900; text-transform: uppercase; margin-bottom: 8px; }
+        .payment-desc { font-size: 13px; color: var(--text-muted); margin-bottom: 24px; }
+        
+        .payment-options { display: flex; flex-direction: column; gap: 12px; }
+        .pay-option-btn {
+            background: rgba(255,255,255,0.02); border: 1px solid var(--border-glass);
+            padding: 16px; border-radius: 10px; color: #fff; font-size: 15px; font-weight: 700;
+            display: flex; justify-content: space-between; align-items: center; cursor: pointer;
+            transition: all 0.2s;
+        }
+        .pay-option-btn:hover { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.3); }
+        .pay-option-btn .currency-label { display: flex; align-items: center; gap: 8px; }
+        
+        .close-payment { margin-top: 20px; font-size: 12px; color: var(--text-muted); cursor: pointer; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; }
+        .close-payment:hover { color: #fff; }
     </style>
 </head>
 <body>
 
     <div class="bg-glow"></div>
-    <div class="bg-glow-right"></div>
 
     <header class="top-navbar">
         <div class="nav-left">
             <button class="back-btn" onclick="window.location.href='index.html'">⬅ Volver</button>
-            <h1 class="store-title">TIENDA // <span>PERSONAJES</span></h1>
+            <h1 class="store-title">ARMERÍA // <span>TIENDA</span></h1>
         </div>
         <div class="nav-right">
             <div class="currency-box gold">🪙 <span id="store-gold">0</span></div>
@@ -152,70 +184,101 @@
     </header>
 
     <main class="main-container">
-        <div class="products-grid">
-            
-            <!-- Personaje 1: TAMAKI -->
-            <div class="character-card">
-                <span class="rarity-tag usable">Habilidad Usable</span>
-                <div class="character-display">
-                    <div class="character-avatar-placeholder">TAMAKI</div>
-                </div>
-                <div class="character-details">
-                    <h3 class="character-name">Tamaki</h3>
-                    <p class="character-ability">Da un 10% de velocidad de movimiento por 10s. Al recibir daño, aumenta un 20% de daño al disparo a la cabeza y un 10% de velocidad de disparo. Enfriamiento: 60s.</p>
-                    <div class="price-row">
-                        <div class="price-item gold">🪙 10,000</div>
-                        <div class="price-item diamonds">💎 300</div>
-                    </div>
-                    <div class="card-actions">
-                        <button class="btn-buy" id="btn-buy-Tamaki" onclick="buyCharacter('Tamaki', 10000, 300)">Obtener</button>
-                        <button class="btn-gift" onclick="giftCharacter('Tamaki', 10000, 300)">Regalar</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Personaje 2: TIVET -->
-            <div class="character-card">
-                <span class="rarity-tag ayudable">Habilidad Ayudable</span>
-                <div class="character-display">
-                    <div class="character-avatar-placeholder">TIVET</div>
-                </div>
-                <div class="character-details">
-                    <h3 class="character-name">Tivet</h3>
-                    <p class="character-ability">Otorga cada 120s un 15% de velocidad de movimiento. Al entrar en combate con menos de 50 VD, automáticamente se cura solo y recibes un escudo de 200 VD.</p>
-                    <div class="price-row">
-                        <div class="price-item gold">🪙 5,000</div>
-                        <div class="price-item diamonds">💎 200</div>
-                    </div>
-                    <div class="card-actions">
-                        <button class="btn-buy" id="btn-buy-Tivet" onclick="buyCharacter('Tivet', 5000, 200)">Obtener</button>
-                        <button class="btn-gift" onclick="giftCharacter('Tivet', 5000, 200)">Regalar</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Personaje 3: GALLET -->
-            <div class="character-card">
-                <span class="rarity-tag ayudable">Habilidad Ayudable</span>
-                <div class="character-display">
-                    <div class="character-avatar-placeholder">GALLET</div>
-                </div>
-                <div class="character-details">
-                    <h3 class="character-name">Gallet</h3>
-                    <p class="character-ability">Aumenta al máximo los puntos de escudo (máx 150). Cuando tus puntos de escudo están al mínimo, cada 60s se restablecen por completo al máximo.</p>
-                    <div class="price-row">
-                        <div class="price-item gold">🪙 5,000</div>
-                        <div class="price-item diamonds">💎 200</div>
-                    </div>
-                    <div class="card-actions">
-                        <button class="btn-buy" id="btn-buy-Gallet" onclick="buyCharacter('Gallet', 5000, 200)">Obtener</button>
-                        <button class="btn-gift" onclick="giftCharacter('Gallet', 5000, 200)">Regalar</button>
-                    </div>
-                </div>
-            </div>
-
+        
+        <!-- PESTAÑAS DE CATEGORÍAS -->
+        <div class="category-tabs">
+            <button class="tab-btn active" onclick="switchCategory('usable', this)">Habilidades Usables</button>
+            <button class="tab-btn tab-ayudable" onclick="switchCategory('ayudable', this)">Habilidades Ayudables</button>
         </div>
+
+        <!-- CATEGORÍA 1: USABLES -->
+        <section id="cat-usable" class="category-section active">
+            <div class="products-grid">
+                <!-- Tamaki -->
+                <div class="character-card">
+                    <div class="character-display">
+                        <div class="character-avatar-placeholder">TAMAKI</div>
+                    </div>
+                    <div class="character-details">
+                        <h3 class="character-name">Tamaki</h3>
+                        <p class="character-ability">Da un 10% de velocidad de movimiento por 10s. Al recibir daño, aumenta un 20% de daño al disparo a la cabeza y un 10% de velocidad de disparo. Enfriamiento: 60s.</p>
+                        <div class="price-row">
+                            <div class="price-item gold">🪙 10,000</div>
+                            <div class="price-item diamonds">💎 300</div>
+                        </div>
+                        <div class="card-actions">
+                            <button class="btn-buy" id="btn-buy-Tamaki" onclick="openPaymentFlow('Tamaki', 10000, 300)">Obtener</button>
+                            <button class="btn-gift" onclick="giftCharacter('Tamaki', 10000, 300)">Regalar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CATEGORÍA 2: AYUDABLES -->
+        <section id="cat-ayudable" class="category-section">
+            <div class="products-grid">
+                <!-- Tivet -->
+                <div class="character-card">
+                    <div class="character-display">
+                        <div class="character-avatar-placeholder">TIVET</div>
+                    </div>
+                    <div class="character-details">
+                        <h3 class="character-name">Tivet</h3>
+                        <p class="character-ability">Otorga cada 120s un 15% de velocidad de movimiento. Al entrar en combate con menos de 50 VD, automáticamente se cura solo y recibes un escudo de 200 VD.</p>
+                        <div class="price-row">
+                            <div class="price-item gold">🪙 5,000</div>
+                            <div class="price-item diamonds">💎 200</div>
+                        </div>
+                        <div class="card-actions">
+                            <button class="btn-buy" id="btn-buy-Tivet" onclick="openPaymentFlow('Tivet', 5000, 200)">Obtener</button>
+                            <button class="btn-gift" onclick="giftCharacter('Tivet', 5000, 200)">Regalar</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gallet -->
+                <div class="character-card">
+                    <div class="character-display">
+                        <div class="character-avatar-placeholder">GALLET</div>
+                    </div>
+                    <div class="character-details">
+                        <h3 class="character-name">Gallet</h3>
+                        <p class="character-ability">Aumenta al máximo los puntos de escudo (máx 150). Cuando tus puntos de escudo están al mínimo, cada 60s se restablecen por completo al máximo.</p>
+                        <div class="price-row">
+                            <div class="price-item gold">🪙 5,000</div>
+                            <div class="price-item diamonds">💎 200</div>
+                        </div>
+                        <div class="card-actions">
+                            <button class="btn-buy" id="btn-buy-Gallet" onclick="openPaymentFlow('Gallet', 5000, 200)">Obtener</button>
+                            <button class="btn-gift" onclick="giftCharacter('Gallet', 5000, 200)">Regalar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
     </main>
+
+    <!-- 📌 NUEVA VENTANA EMERGENTE INTERACTIVA DE SELECCIÓN DE PAGO -->
+    <div class="modal-payment" id="paymentModal">
+        <div class="payment-card">
+            <div class="payment-title" id="pay-title">Método de Pago</div>
+            <div class="payment-desc">Elige la divisa que deseas utilizar para desbloquear este personaje</div>
+            
+            <div class="payment-options">
+                <button class="pay-option-btn" id="pay-gold-btn">
+                    <span class="currency-label">🪙 Monedas</span>
+                    <span id="pay-gold-cost">0</span>
+                </button>
+                <button class="pay-option-btn" id="pay-diamonds-btn" style="color: #00bfff;">
+                    <span class="currency-label">💎 Diamantes</span>
+                    <span id="pay-diamonds-cost">0</span>
+                </button>
+            </div>
+            
+            <div class="close-payment" onclick="closePaymentFlow()">Cancelar Selección</div>
+        </div>
+    </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
@@ -236,10 +299,13 @@
         const db = getFirestore(app);
         
         let currentUserDocRef = null;
-        let miNombre = "Remitente";
+        let miNombre = "";
         let saldoOro = 0;
         let saldoDiamantes = 0;
         let misPersonajes = [];
+
+        // Variables de sesión temporal de compra
+        let currentTargetItem = { nombre: "", oro: 0, diamantes: 0 };
 
         const palabrasProhibidas = ["mierda", "puto", "puta", "hacker", "hack", "pendejo", "culiao", "marico"];
 
@@ -265,14 +331,21 @@
                 document.getElementById("store-gold").textContent = Number(saldoOro).toLocaleString();
                 document.getElementById("store-diamonds").textContent = saldoDiamantes;
 
-                // Bloqueador de compras repetidas
                 verifyOwnedCharacters();
             }
         }
 
+        // CAMBIAR CATEGORÍAS (TABS)
+        window.switchCategory = function(categoria, btn) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            document.querySelectorAll('.category-section').forEach(s => s.classList.remove('active'));
+            document.getElementById(`cat-${categoria}`).classList.add('active');
+        };
+
         function verifyOwnedCharacters() {
-            const listado = ["Tamaki", "Tivet", "Gallet"];
-            listado.forEach(pj => {
+            ["Tamaki", "Tivet", "Gallet"].forEach(pj => {
                 const btn = document.getElementById(`btn-buy-${pj}`);
                 if (btn) {
                     if (misPersonajes.includes(pj)) {
@@ -286,43 +359,60 @@
             });
         }
 
-        // COMPRA DIRECTA PARA UNO MISMO (CON VALIDACIÓN ANTI-DUPLICADOS)
-        window.buyCharacter = async function(nombre, costoOro, costoDiamantes) {
-            if (!currentUserDocRef) return;
+        // 📌 FLUJO INTERACTIVO DE PAGO
+        window.openPaymentFlow = function(nombre, costoOro, costoDiamantes) {
+            if (misPersonajes.includes(nombre)) return;
 
-            if (misPersonajes.includes(nombre)) {
-                alert("Ya posees este personaje.");
-                return;
-            }
+            // Guardar datos temporalmente
+            currentTargetItem = { nombre, oro: costoOro, diamantes: costoDiamantes };
 
-            if (saldoOro >= costoOro) {
-                if (confirm(`¿Deseas obtener a ${nombre} por 🪙 ${costoOro.toLocaleString()} monedas?`)) {
-                    try {
-                        saldoOro -= costoOro;
-                        // Resta monedas e inyecta el personaje en la lista del usuario
-                        await updateDoc(currentUserDocRef, { 
-                            oro: saldoOro,
-                            personajes: arrayUnion(nombre)
-                        });
-                        await actualizarDatosUsuario();
-                        alert(`¡Has adquirido a ${nombre} con éxito!`);
-                    } catch (error) {
-                        console.error("Error al procesar la compra:", error);
-                    }
-                }
-            } else {
-                alert("Monedas insuficientes para realizar la transacción.");
-            }
+            document.getElementById("pay-title").textContent = `Desbloquear ${nombre}`;
+            document.getElementById("pay-gold-cost").textContent = costoOro.toLocaleString();
+            document.getElementById("pay-diamonds-cost").textContent = costoDiamantes;
+
+            // Configurar triggers de los botones del modal
+            document.getElementById("pay-gold-btn").onclick = () => executePurchase('oro');
+            document.getElementById("pay-diamonds-btn").onclick = () => executePurchase('diamantes');
+
+            document.getElementById("paymentModal").style.display = "flex";
         };
 
-        // 🎁 SISTEMA DE REGALOS INTEGRADO
+        window.closePaymentFlow = function() {
+            document.getElementById("paymentModal").style.display = "none";
+        };
+
+        // COMPRAR TRAS SELECCIONAR DIVISA
+        async function executePurchase(metodo) {
+            closePaymentFlow();
+            const { nombre, oro, diamantes } = currentTargetItem;
+
+            if (metodo === 'oro') {
+                if (saldoOro < oro) {
+                    alert("Monedas insuficientes para esta transacción.");
+                    return;
+                }
+                if (confirm(`¿Deseas pagar ${nombre} usando 🪙 ${oro.toLocaleString()} monedas?`)) {
+                    saldoOro -= oro;
+                    await updateDoc(currentUserDocRef, { oro: saldoOro, personajes: arrayUnion(nombre) });
+                    alert(`¡${nombre} desbloqueado exitosamente!`);
+                }
+            } else if (metodo === 'diamantes') {
+                if (saldoDiamantes < diamantes) {
+                    alert("Diamantes insuficientes para esta transacción.");
+                    return;
+                }
+                if (confirm(`¿Deseas pagar ${nombre} usando 💎 ${diamantes} diamantes?`)) {
+                    saldoDiamantes -= diamantes;
+                    await updateDoc(currentUserDocRef, { diamantes: saldoDiamantes, personajes: arrayUnion(nombre) });
+                    alert(`¡${nombre} desbloqueado exitosamente!`);
+                }
+            }
+            await actualizarDatosUsuario();
+        }
+
+        // 🎁 REGALAR (PREGUNTA SI PAGA CON MONEDAS O DIAMANTES DE MANERA INTERACTIVA)
         window.giftCharacter = async function(nombrePersonaje, costoOro, costoDiamantes) {
             if (!currentUserDocRef) return;
-
-            if (saldoOro < costoOro) {
-                alert("No tienes suficientes monedas para realizar este regalo.");
-                return;
-            }
 
             const targetId = prompt("Introduce el ID del jugador al que deseas regalarle:");
             if (!targetId || targetId.trim() === "") return;
@@ -336,11 +426,31 @@
             }
 
             const amigoDoc = querySnapshot.docs[0];
-            const amigoData = amigoDoc.data();
             const amigoUid = amigoDoc.id;
-            const amigoNombre = amigoData.username;
+            const amigoNombre = amigoDoc.data().username;
 
-            // Alerta nativa JavaScript estructurada exacta
+            // Selección de moneda para regalar mediante flujo diseñado rápido en prompt
+            const eleccionDivisa = prompt(`¿Con qué divisa deseas pagar el regalo para ${amigoNombre}?\n\nEscribe "1" para Monedas (🪙 ${costoOro.toLocaleString()})\nEscribe "2" para Diamantes (💎 ${costoDiamantes})`);
+            
+            let divisaElegida = "";
+            if (eleccionDivisa === "1") divisaElegida = "oro";
+            else if (eleccionDivisa === "2") divisaElegida = "diamantes";
+            else {
+                alert("Selección cancelada o inválida.");
+                return;
+            }
+
+            // Validar saldo correspondiente
+            if (divisaElegida === "oro" && saldoOro < costoOro) {
+                alert("Monedas insuficientes.");
+                return;
+            }
+            if (divisaElegida === "diamantes" && saldoDiamantes < costoDiamantes) {
+                alert("Diamantes insuficientes.");
+                return;
+            }
+
+            // Confirmación exacta requerida
             const confirmacion = confirm(`¿Quieres regalarle a este jugador?\n\nID: ${targetId}\nNombre: ${amigoNombre}`);
             if (!confirmacion) return;
 
@@ -349,18 +459,20 @@
                 mensajeRegalo = "¡Disfruta mi regalo!";
             } else {
                 const contieneInsulto = palabrasProhibidas.some(palabra => mensajeRegalo.toLowerCase().includes(palabra));
-                if (contieneInsulto) {
-                    mensajeRegalo = "¡Disfruta mi regalo!";
-                }
+                if (contieneInsulto) mensajeRegalo = "¡Disfruta mi regalo!";
             }
 
             try {
-                // Se le descuentan las monedas al remitente
-                saldoOro -= costoOro;
-                await updateDoc(currentUserDocRef, { oro: saldoOro });
-                document.getElementById("store-gold").textContent = saldoOro.toLocaleString();
+                // Descontar la divisa elegida
+                if (divisaElegida === "oro") {
+                    saldoOro -= costoOro;
+                    await updateDoc(currentUserDocRef, { oro: saldoOro });
+                } else {
+                    saldoDiamantes -= costoDiamantes;
+                    await updateDoc(currentUserDocRef, { diamantes: saldoDiamantes });
+                }
 
-                // Se deposita el objeto directo en el inbox del destinatario
+                // Depositar regalo en el inbox del amigo
                 const buzonRef = collection(db, "usuarios", amigoUid, "buzon");
                 await addDoc(buzonRef, {
                     remitenteNombre: miNombre,
@@ -375,8 +487,7 @@
                 await actualizarDatosUsuario();
 
             } catch (err) {
-                console.error("Error al enviar el regalo:", err);
-                alert("Ocurrió un error en el servidor al tramitar el regalo.");
+                console.error("Error al enviar regalo:", err);
             }
         };
     </script>
