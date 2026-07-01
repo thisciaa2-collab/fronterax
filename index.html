@@ -4,9 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Frontera-X | Acceso</title>
+    <!-- Favicon directo en la raíz -->
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght=400;600;800;900&display=swap" rel="stylesheet">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
         body {
@@ -73,7 +76,7 @@
                 const docSnap = await getDoc(docRef);
 
                 if (docSnap.exists()) {
-                    window.location.href = "game/lobby.html";
+                    window.location.href = "game/index.html";
                 } else {
                     await registrarNuevoUsuarioEnFirestore(user);
                 }
@@ -84,7 +87,6 @@
             let username = prompt("Introduce tu nombre de usuario:");
             if (!username || username.trim() === "") username = "Recluta X";
 
-            // 📌 PREGUNTA EL GÉNERO ANTES DE LA REGIÓN
             let genero = "";
             while (genero !== "hombre" && genero !== "mujer") {
                 let seleccion = prompt("Selecciona el género de tu personaje:\n\nEscribe '1' para HOMBRE\nEscribe '2' para MUJER");
@@ -92,7 +94,6 @@
                 if (seleccion === "2") genero = "mujer";
             }
 
-            // 📌 PREGUNTA LA REGIÓN DESPUÉS DEL GÉNERO
             let region = prompt("Introduce tu región (Ej: EE.UU. / LATAM / EUROPA):");
             if (!region || region.trim() === "") region = "Global";
 
@@ -119,7 +120,7 @@
             };
 
             await setDoc(doc(db, "usuarios", user.uid), nuevoUsuario);
-            window.location.href = "game/lobby.html";
+            window.location.href = "game/index.html";
         }
     </script>
 </body>
