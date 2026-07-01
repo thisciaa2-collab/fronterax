@@ -6,7 +6,7 @@
     <title>Frontera-X | Lobby Oficial</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght=400;600;700;900&family=JetBrains+Mono:wght=700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=JetBrains+Mono:wght=700&display=swap" rel="stylesheet">
     
     <style>
         :root {
@@ -31,7 +31,7 @@
             position: relative;
         }
 
-        /* --- CONTENEDOR PRINCIPAL INTERFAZ ORIGINAL (image_ac8655.png) --- */
+        /* --- INTERFAZ HUD ORIGINAL (image_ac8655.png) --- */
         .lobby-ui {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             padding: 25px 40px; display: flex; flex-direction: column;
@@ -42,7 +42,6 @@
         /* SECCIÓN SUPERIOR */
         .top-section { display: flex; justify-content: space-between; align-items: flex-start; }
         
-        /* Perfil de Jugador Superior Izquierda */
         .player-profile-box {
             background: rgba(6, 9, 16, 0.6); border: 1px solid var(--border-glass);
             border-radius: 12px; padding: 12px 20px 12px 65px; position: relative; min-width: 180px;
@@ -55,7 +54,6 @@
         .player-name { font-size: 15px; font-weight: 900; color: #fff; letter-spacing: 0.5px; }
         .player-id { font-size: 11px; color: #00ffcc; font-family: 'JetBrains Mono', monospace; margin-top: 2px; }
 
-        /* Divisas Superior Derecha */
         .currencies-container { display: flex; gap: 15px; }
         .currency-pill {
             background: rgba(6, 9, 16, 0.7); border: 1px solid var(--border-glass);
@@ -73,14 +71,13 @@
             background: rgba(10, 14, 26, 0.5); border: 1px solid var(--border-glass);
             color: #fff; font-size: 12px; font-weight: 800; text-transform: uppercase;
             padding: 14px 20px; border-radius: 8px; text-align: left; cursor: pointer;
-            transition: all 0.2s; letter-spacing: 1px; display: flex; align-items: center; gap: 10px;
+            transition: all 0.2s; letter-spacing: 1px;
         }
         .btn-menu-left:hover { border-color: #fff; background: rgba(255,255,255,0.04); transform: translateX(4px); }
 
         /* SECCIÓN INFERIOR */
         .bottom-section { display: flex; justify-content: space-between; align-items: flex-end; }
         
-        /* Botones Esquina Inferior Izquierda */
         .bottom-left-group { display: flex; gap: 10px; background: rgba(6, 9, 16, 0.5); padding: 8px; border-radius: 10px; border: 1px solid var(--border-glass); }
         .btn-bottom-mini {
             background: transparent; border: none; color: var(--text-muted); font-size: 11px;
@@ -88,11 +85,9 @@
             transition: color 0.2s; display: flex; align-items: center; gap: 6px;
         }
         .btn-bottom-mini:hover { color: #fff; }
-        /* Destacar botón de Preset pedido */
         .btn-bottom-mini.preset-trigger { color: var(--accent-purple); font-weight: 800; }
         .btn-bottom-mini.preset-trigger:hover { color: #d69fff; }
 
-        /* Matchmaking Esquina Inferior Derecha */
         .match-control-box { display: flex; flex-direction: column; align-items: flex-end; gap: 12px; }
         .mode-indicator {
             background: rgba(6, 9, 16, 0.7); padding: 10px 20px; border-radius: 8px;
@@ -109,92 +104,70 @@
             text-align: center; letter-spacing: 1px;
         }
         .btn-start-game:hover { transform: scale(1.02); opacity: 0.95; }
-        .btn-start-game:active { transform: scale(0.98); }
 
-
-        /* --- 📌 MODAL DE PRESETS (MECÁNICA SOLICITADA) --- */
+        /* MODAL DE PRESETS */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(10px);
             display: none; justify-content: center; align-items: center; z-index: 1000;
         }
-
         .preset-modal {
             background: var(--bg-glass); border: 1px solid var(--border-glass);
             width: 820px; max-width: 95%; border-radius: 16px; display: grid;
             grid-template-columns: 200px 1fr; overflow: hidden;
-            box-shadow: 0 25px 60px rgba(0,0,0,0.7);
         }
-
-        .preset-sidebar {
-            background: rgba(4, 6, 10, 0.6); border-right: 1px solid var(--border-glass);
-            padding: 20px; display: flex; flex-direction: column; gap: 10px;
-        }
-        .sidebar-title { font-size: 12px; font-weight: 900; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px; letter-spacing: 1px; }
-        
+        .preset-sidebar { background: rgba(4, 6, 10, 0.6); border-right: 1px solid var(--border-glass); padding: 20px; display: flex; flex-direction: column; gap: 10px; }
+        .sidebar-title { font-size: 12px; font-weight: 900; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px; }
         .preset-tab {
-            background: rgba(255,255,255,0.02); border: 1px solid transparent;
-            color: var(--text-muted); padding: 12px 16px; border-radius: 8px; text-align: left;
-            font-size: 13px; font-weight: 700; cursor: pointer; transition: all 0.2s;
+            background: rgba(255,255,255,0.02); border: 1px solid transparent; color: var(--text-muted); padding: 12px 16px;
+            border-radius: 8px; text-align: left; font-size: 13px; font-weight: 700; cursor: pointer; transition: all 0.2s;
         }
-        .preset-tab:hover { background: rgba(255,255,255,0.04); color: #fff; }
-        .preset-tab.active {
-            background: rgba(157, 78, 221, 0.12); border-color: var(--accent-purple); color: #fff;
-        }
-
+        .preset-tab.active { background: rgba(157, 78, 221, 0.12); border-color: var(--accent-purple); color: #fff; }
         .preset-content { padding: 30px; display: flex; flex-direction: column; justify-content: space-between; }
         .content-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
-        .content-header h3 { font-size: 18px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.5px; }
-        .close-modal { font-size: 24px; color: var(--text-muted); cursor: pointer; transition: color 0.2s; }
-        .close-modal:hover { color: #ff4a4a; }
-
+        .content-header h3 { font-size: 18px; font-weight: 900; text-transform: uppercase; }
+        .close-modal { font-size: 24px; color: var(--text-muted); cursor: pointer; }
         .slots-grid { display: flex; flex-direction: column; gap: 18px; }
-        .slot-box {
-            background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.04);
-            padding: 14px; border-radius: 10px; display: flex; flex-direction: column; gap: 8px;
-        }
+        .slot-box { background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.04); padding: 14px; border-radius: 10px; display: flex; flex-direction: column; gap: 8px; }
         .slot-box.usable-slot { border-left: 4px solid var(--accent); }
         .slot-box.ayudable-slot { border-left: 4px solid var(--accent-purple); }
-
-        .slot-label { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
+        .slot-label { font-size: 11px; font-weight: 800; text-transform: uppercase; }
         .slot-box.usable-slot .slot-label { color: var(--accent); }
         .slot-box.ayudable-slot .slot-label { color: var(--accent-purple); }
-
-        select {
-            background: #0b0e14; border: 1px solid var(--border-glass); color: #fff;
-            padding: 10px; border-radius: 6px; font-size: 13px; font-weight: 600; outline: none;
-            width: 100%; cursor: pointer;
-        }
+        select { background: #0b0e14; border: 1px solid var(--border-glass); color: #fff; padding: 10px; border-radius: 6px; width: 100%; outline: none; }
         .ayudables-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
-
-        .btn-save-preset {
-            background: #fff; border: none; color: #000; padding: 14px; border-radius: 8px;
-            font-size: 13px; font-weight: 900; text-transform: uppercase; cursor: pointer;
-            width: 100%; margin-top: 20px; transition: background 0.2s; letter-spacing: 0.5px;
-        }
+        .btn-save-preset { background: #fff; border: none; color: #000; padding: 14px; border-radius: 8px; font-size: 13px; font-weight: 900; text-transform: uppercase; cursor: pointer; margin-top: 20px; width: 100%; }
         .btn-save-preset:hover { background: var(--accent); }
     </style>
 </head>
 <body>
 
-    <!-- INTERFAZ HUD DEL LOBBY RESTAURADA -->
+    <!-- 📌 VISOR 3D DEL JUGADOR INTERACTIVO DETRÁS DEL HUD -->
+    <model-viewer id="lobby-character-3d" 
+                  src="" 
+                  camera-controls 
+                  auto-rotate 
+                  disable-zoom 
+                  interaction-prompt="none"
+                  shadow-intensity="15" 
+                  shadow-softness="1"
+                  style="position: fixed; top: 0; left: 0; width: 100%; height: 100vh; z-index: 1; pointer-events: auto;">
+    </model-viewer>
+
+    <!-- INTERFAZ HUD -->
     <div class="lobby-ui">
-        
-        <!-- PARTE SUPERIOR -->
         <div class="top-section">
             <div class="player-profile-box">
                 <div class="player-level" id="lobby-level">1</div>
                 <div class="player-name" id="lobby-username">Cargando...</div>
                 <div class="player-id" id="lobby-id">ID: ----------</div>
             </div>
-
             <div class="currencies-container">
                 <div class="currency-pill gold">🪙 <span id="lobby-gold">0</span></div>
                 <div class="currency-pill diamonds">💎 <span id="lobby-diamonds">0</span></div>
             </div>
         </div>
 
-        <!-- PARTE CENTRAL (MENÚ IZQUIERDO ORIGINAL) -->
         <div class="middle-section">
             <div class="left-menu">
                 <button class="btn-menu-left" onclick="window.location.href='store.html'">🛒 Tienda</button>
@@ -204,34 +177,25 @@
             </div>
         </div>
 
-        <!-- PARTE INFERIOR -->
         <div class="bottom-section">
-            <!-- Botones esquina inferior izquierda + Botón Preset integrado -->
             <div class="bottom-left-group">
                 <button class="btn-bottom-mini" onclick="alert('Abriendo Vault...')">📦 Vault</button>
                 <button class="btn-bottom-mini" onclick="alert('Abriendo Weapons...')">🔫 Weapon</button>
-                <!-- Botón solicitado ejecutando javascript:() de apertura -->
                 <button class="btn-bottom-mini preset-trigger" onclick="openPresetModal()">🛠 Preset</button>
             </div>
-
-            <!-- Matchmaking e Inicio -->
             <div class="match-control-box">
                 <div class="mode-indicator">
                     <div class="mode-title">Clasificatoria BOT</div>
                     <div class="mode-map">Mapa: Bermudas</div>
                 </div>
-                <button class="btn-start-game" onclick="alert('¡Buscando emparejamiento!')">START</button>
+                <button class="btn-start-game" onclick="alert('¡Buscando partida!')">START</button>
             </div>
         </div>
-
     </div>
 
-
-    <!-- 📌 CAPA INTERACTIVA DEL MODAL DE PRESETS -->
+    <!-- MODAL PRESETS -->
     <div class="modal-overlay" id="presetModalOverlay">
         <div class="preset-modal">
-            
-            <!-- Lateral: Pestañas de Preset 1 a 5 -->
             <div class="preset-sidebar">
                 <div class="sidebar-title">Presets</div>
                 <button class="preset-tab active" onclick="switchPresetTab(1)">Preset 1</button>
@@ -240,25 +204,17 @@
                 <button class="preset-tab" onclick="switchPresetTab(4)">Preset 4</button>
                 <button class="preset-tab" onclick="switchPresetTab(5)">Preset 5</button>
             </div>
-
-            <!-- Panel de Personalización -->
             <div class="preset-content">
                 <div>
                     <div class="content-header">
                         <h3 id="active-preset-title">Configurar Preset 1</h3>
                         <span class="close-modal" onclick="closePresetModal()">&times;</span>
                     </div>
-
                     <div class="slots-grid">
-                        <!-- SLOT USABLE (MÁXIMO 1) -->
                         <div class="slot-box usable-slot">
                             <div class="slot-label">Habilidad Usable (Máx 1)</div>
-                            <select id="select-usable">
-                                <option value="">Ninguno</option>
-                            </select>
+                            <select id="select-usable"><option value="">Ninguno</option></select>
                         </div>
-
-                        <!-- SLOTS AYUDABLES (MÁXIMO 3) -->
                         <div class="slot-box ayudable-slot">
                             <div class="slot-label">Habilidades Ayudables (Máx 3)</div>
                             <div class="ayudables-row">
@@ -269,15 +225,12 @@
                         </div>
                     </div>
                 </div>
-
                 <button class="btn-save-preset" onclick="saveActivePresetToServer()">Guardar Equipamiento</button>
             </div>
-
         </div>
     </div>
 
-
-    <!-- CONFIGURACIÓN MOTOR DE BASE DE DATOS -->
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
@@ -299,7 +252,6 @@
         let currentUserDocRef = null;
         let misPersonajes = [];
         let currentPresetIndex = 1;
-
         let todosLosPresets = {
             preset1: { usable: "", ayudables: ["", "", ""] },
             preset2: { usable: "", ayudables: ["", "", ""] },
@@ -317,7 +269,6 @@
                 
                 if (docSnap.exists()) {
                     const data = docSnap.data();
-                    // Inyectar datos en HUD original
                     document.getElementById("lobby-username").textContent = data.username || "Jugador";
                     document.getElementById("lobby-id").textContent = `ID: ${data.gameId || "106524103"}`;
                     document.getElementById("lobby-gold").textContent = Number(data.oro || 0).toLocaleString();
@@ -326,6 +277,16 @@
                     
                     misPersonajes = data.personajes || [];
                     if (data.presets) todosLosPresets = data.presets;
+
+                    // 📌 ENRUTAMIENTO DEL MODELO 3D REAL SEGÚN EL GÉNERO
+                    const visor3D = document.getElementById("lobby-character-3d");
+                    if (visor3D) {
+                        if (data.genero === "mujer") {
+                            visor3D.setAttribute("src", "https://www.dropbox.com/scl/fi/8k52afnif25g5kox2sazk/Defeated-1.glb?rlkey=3ehphvuvj61meyf05xh39kafy&st=qaajv7yz&dl=1");
+                        } else {
+                            visor3D.setAttribute("src", "https://www.dropbox.com/scl/fi/coqtz064191supz8vv7e4/TamakiGlobal.glb?rlkey=ioica9w27zaxr84wr78aep09z&st=2c2ub9de&dl=1");
+                        }
+                    }
 
                     poblarSelectoresHabilidades();
                 }
@@ -340,13 +301,9 @@
 
             selectUsable.innerHTML = '<option value="">Ninguno</option>';
             const defaultAyudable = '<option value="">Vacío</option>';
-            selectAyudable1.innerHTML = defaultAyudable;
-            selectAyudable2.innerHTML = defaultAyudable;
-            selectAyudable3.innerHTML = defaultAyudable;
+            selectAyudable1.innerHTML = defaultAyudable; selectAyudable2.innerHTML = defaultAyudable; selectAyudable3.innerHTML = defaultAyudable;
 
-            if (misPersonajes.includes("Tamaki")) {
-                selectUsable.innerHTML += `<option value="Tamaki">Tamaki</option>`;
-            }
+            if (misPersonajes.includes("Tamaki")) selectUsable.innerHTML += `<option value="Tamaki">Tamaki</option>`;
             if (misPersonajes.includes("Tivet")) {
                 const opt = `<option value="Tivet">Tivet</option>`;
                 selectAyudable1.innerHTML += opt; selectAyudable2.innerHTML += opt; selectAyudable3.innerHTML += opt;
@@ -357,26 +314,17 @@
             }
         }
 
-        window.openPresetModal = function() {
-            document.getElementById("presetModalOverlay").style.display = "flex";
-            switchPresetTab(1);
-        };
-
-        window.closePresetModal = function() {
-            document.getElementById("presetModalOverlay").style.display = "none";
-        };
+        window.openPresetModal = () => { document.getElementById("presetModalOverlay").style.display = "flex"; switchPresetTab(1); };
+        window.closePresetModal = () => { document.getElementById("presetModalOverlay").style.display = "none"; };
 
         window.switchPresetTab = function(num) {
             currentPresetIndex = num;
-            const tabs = document.querySelectorAll('.preset-tab');
-            tabs.forEach((tab, index) => {
+            document.querySelectorAll('.preset-tab').forEach((tab, index) => {
                 if (index === (num - 1)) tab.classList.add('active');
                 else tab.classList.remove('active');
             });
-
             document.getElementById("active-preset-title").textContent = `Configurar Preset ${num}`;
             const configActual = todosLosPresets[`preset${num}`];
-
             document.getElementById("select-usable").value = configActual.usable || "";
             document.getElementById("select-ayudable-1").value = configActual.ayudables[0] || "";
             document.getElementById("select-ayudable-2").value = configActual.ayudables[1] || "";
@@ -385,9 +333,7 @@
 
         window.saveActivePresetToServer = async function() {
             if (!currentUserDocRef) return;
-
-            const pKey = `preset${currentPresetIndex}`;
-            todosLosPresets[pKey] = {
+            todosLosPresets[`preset${currentPresetIndex}`] = {
                 usable: document.getElementById("select-usable").value,
                 ayudables: [
                     document.getElementById("select-ayudable-1").value,
@@ -395,13 +341,10 @@
                     document.getElementById("select-ayudable-3").value
                 ]
             };
-
             try {
                 await updateDoc(currentUserDocRef, { presets: todosLosPresets });
                 alert(`¡Preset ${currentPresetIndex} guardado con éxito!`);
-            } catch (err) {
-                console.error("Error:", err);
-            }
+            } catch (err) { console.error(err); }
         };
     </script>
 </body>
