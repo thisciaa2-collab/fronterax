@@ -208,24 +208,50 @@
         document.getElementById('game-canvas').appendChild(renderer.domElement);
 
         function loadCharacterModel() {
-            const loader = new THREE.GLTFLoader();
-            
-            // Tu enlace directo verificado de Dropbox
-            const urlDropbox = "https://www.dropbox.com/scl/fi/l1mn0t9arcqsa5cs7d2gq/Ch06_nonPBR.glb?rlkey=bn8cubv67qyt7xvtej02733qc&st=u1r9ro4p&dl=1"; 
+    const loader = new THREE.GLTFLoader();
+    
+    // El enlace original de Dropbox
+    const enlaceDropboxOriginal = "https://www.dropbox.com/scl/fi/l1mn0t9arcqsa5cs7d2gq/Ch06_nonPBR.glb?rlkey=bn8cubv67qyt7xvtej02733qc&st=u1r9ro4p&dl=1"; 
 
-            loader.load(urlDropbox, (gltf) => {
-                const character = gltf.scene;
-                
-                // Forzamos el LinearFilter para reducir drásticamente el peso de texturas 4K en VRAM
-                character.traverse((child) => {
-                    if (child.isMesh && child.material) {
-                        const materials = Array.isArray(child.material) ? child.material : [child.material];
-                        materials.forEach((mat) => {
-                            if (mat.map) mat.map.minFilter = THREE.LinearFilter;
-                            if (mat.normalMap) mat.normalMap.minFilter = THREE.LinearFilter;
-                        });
-                    }
+    // 🚀 INYECCIÓN DEL PROXY INVERSO PARA ROMPER EL BLOQUEO CORS:
+    const urlDropbox = "https://cors-anywhere.herokuapp.com/" + enlaceDropboxOriginal;
+
+    loader.load(urlDropbox, (gltf) => {
+        const character = gltf.scene;
+        
+        // Forzamos el LinearFilter para reducir drásticamente el peso de texturas 4K en VRAM
+        character.traverse((child) => {
+            if (child.isMesh && child.material) {
+                const materials = Array.isArray(child.material) ? child.material : [child.material];
+                materials.forEach((mat) => {
+                    if (mat.map) mat.map.minFilter = THREE.LinearFilter;
+                    if (mat.normalMap) mat.normalMap.minFilter = THREE.LinearFilter;
                 });
+            }
+        });
+
+        character.position.set(0, 0, 0);
+        character.scale.set(1.1, 1.1, 1.1);
+        scene.add(character);
+        
+        document.getElementById("loading-screen").style.display = "none";
+        
+        function animateModel() {
+            requestAnimationFrame(animateModel);
+            character.rotation.y += 0.004;
+        }
+        animateModel();
+
+    }, (xhr) => {
+        if (xhr.total > 0) {
+            const percent = (xhr.loaded / xhr.total) * 100;
+            document.getElementById("load-progress").style.width = percent + "%";
+        }
+    }, (err) => {
+        console.error("Error cargando desde el CDN de Dropbox:", err);
+        document.getElementById("loading-screen").style.display = "none";
+    });
+}
 
                 character.position.set(0, 0, 0);
                 character.scale.set(1.1, 1.1, 1.1);
