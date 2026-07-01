@@ -73,7 +73,7 @@
         .main-container { max-width: 1400px; margin: 40px auto; padding: 0 20px; }
 
         .products-grid {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
             gap: 25px; margin-top: 20px;
         }
 
@@ -89,12 +89,12 @@
         }
 
         .character-display {
-            width: 100%; height: 320px; background: linear-gradient(180deg, rgba(10,14,26,0) 40%, rgba(6,8,12,1) 100%), #121824;
+            width: 100%; height: 260px; background: linear-gradient(180deg, rgba(10,14,26,0) 40%, rgba(6,8,12,1) 100%), #121824;
             display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden;
         }
         
         .character-avatar-placeholder {
-            font-size: 72px; font-weight: 900; opacity: 0.15; color: var(--text-light);
+            font-size: 64px; font-weight: 900; opacity: 0.15; color: var(--text-light);
             transition: all 0.3s ease;
         }
         .character-card:hover .character-avatar-placeholder { opacity: 0.4; transform: scale(1.1); }
@@ -103,19 +103,19 @@
             position: absolute; top: 15px; left: 15px; padding: 4px 10px; border-radius: 6px;
             font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;
         }
-        .rarity-tag.legendary { background: rgba(255, 153, 0, 0.2); border: 1px solid #ff9900; color: #ff9900; }
-        .rarity-tag.epic { background: rgba(157, 78, 221, 0.2); border: 1px solid var(--accent-purple); color: var(--accent-purple); }
+        .rarity-tag.usable { background: rgba(0, 255, 204, 0.15); border: 1px solid var(--accent); color: var(--accent); }
+        .rarity-tag.ayudable { background: rgba(157, 78, 221, 0.15); border: 1px solid var(--accent-purple); color: var(--accent-purple); }
 
         .character-details { padding: 20px; display: flex; flex-direction: column; gap: 12px; flex-grow: 1; }
-        .character-name { font-size: 20px; font-weight: 800; text-transform: uppercase; }
-        .character-ability { font-size: 12px; color: var(--text-muted); line-height: 1.4; min-height: 34px; }
+        .character-name { font-size: 22px; font-weight: 800; text-transform: uppercase; }
+        .character-ability { font-size: 12px; color: var(--text-muted); line-height: 1.5; min-height: 72px; }
 
-        .price-row { display: flex; align-items: center; gap: 12px; margin-top: auto; padding-top: 10px; }
-        .price-item { font-size: 16px; font-weight: 700; display: flex; align-items: center; gap: 4px; }
+        .price-row { display: flex; align-items: center; gap: 12px; margin-top: auto; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.05); }
+        .price-item { font-size: 15px; font-weight: 700; display: flex; align-items: center; gap: 4px; }
         .price-item.gold { color: var(--accent-yellow); }
         .price-item.diamonds { color: #00bfff; }
 
-        .card-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
+        .card-actions { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 10px; margin-top: 15px; }
         
         .btn-buy {
             background: linear-gradient(135deg, var(--accent) 0%, #006655 100%);
@@ -123,7 +123,8 @@
             font-size: 12px; font-weight: 800; text-transform: uppercase; cursor: pointer;
             transition: all 0.2s ease; text-align: center;
         }
-        .btn-buy:hover { opacity: 0.9; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0, 255, 204, 0.2); }
+        .btn-buy:hover:not(:disabled) { opacity: 0.9; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0, 255, 204, 0.2); }
+        .btn-buy:disabled { background: #1e293b; color: #64748b; cursor: not-allowed; border: 1px solid rgba(255,255,255,0.05); }
 
         .btn-gift {
             background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-glass);
@@ -155,80 +156,60 @@
             
             <!-- Personaje 1: TAMAKI -->
             <div class="character-card">
-                <span class="rarity-tag legendary">Legendario</span>
+                <span class="rarity-tag usable">Habilidad Usable</span>
                 <div class="character-display">
-                    <div class="character-avatar-placeholder">TMK</div>
+                    <div class="character-avatar-placeholder">TAMAKI</div>
                 </div>
                 <div class="character-details">
                     <h3 class="character-name">Tamaki</h3>
-                    <p class="character-ability">Escudo Sónico: Despliega una barrera de energía que absorbe el 30% del daño infligido por bots de asalto.</p>
-                    <div class="price-row">
-                        <div class="price-item gold">🪙 8,000</div>
-                        <div class="price-item diamonds">💎 499</div>
-                    </div>
-                    <div class="card-actions">
-                        <button class="btn-buy" onclick="buyCharacter('Tamaki', 8000, 499)">Obtener</button>
-                        <button class="btn-gift" onclick="giftCharacter('Tamaki', 8000, 'oro')">Regalar</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Personaje 2: ALOK PROTOTYPE -->
-            <div class="character-card">
-                <span class="rarity-tag legendary">Legendario</span>
-                <div class="character-display">
-                    <div class="character-avatar-placeholder">ALK</div>
-                </div>
-                <div class="character-details">
-                    <h3 class="character-name">Alok X</h3>
-                    <p class="character-ability">Ritmo de Frontera: Crea un aura de 5m que aumenta la velocidad de movimiento un 15% y recupera HP gradualmente.</p>
+                    <p class="character-ability">Da un 10% de velocidad de movimiento por 10s. Al recibir daño, aumenta un 20% de daño al disparo a la cabeza y un 10% de velocidad de disparo. Enfriamiento: 60s.</p>
                     <div class="price-row">
                         <div class="price-item gold">🪙 10,000</div>
-                        <div class="price-item diamonds">💎 599</div>
+                        <div class="price-item diamonds">💎 300</div>
                     </div>
                     <div class="card-actions">
-                        <button class="btn-buy" onclick="buyCharacter('Alok X', 10000, 599)">Obtener</button>
-                        <button class="btn-gift" onclick="giftCharacter('Alok X', 10000, 'oro')">Regalar</button>
+                        <button class="btn-buy" id="btn-buy-Tamaki" onclick="buyCharacter('Tamaki', 10000, 300)">Obtener</button>
+                        <button class="btn-gift" onclick="giftCharacter('Tamaki', 10000, 300)">Regalar</button>
                     </div>
                 </div>
             </div>
 
-            <!-- Personaje 3: CHRONO V2 -->
+            <!-- Personaje 2: TIVET -->
             <div class="character-card">
-                <span class="rarity-tag epic">Épico</span>
+                <span class="rarity-tag ayudable">Habilidad Ayudable</span>
                 <div class="character-display">
-                    <div class="character-avatar-placeholder">CHR</div>
+                    <div class="character-avatar-placeholder">TIVET</div>
                 </div>
                 <div class="character-details">
-                    <h3 class="character-name">Chrono V2</h3>
-                    <p class="character-ability">Túnel del Tiempo: Genera un campo de fuerza estático que detiene proyectiles enemigos durante 4 segundos.</p>
+                    <h3 class="character-name">Tivet</h3>
+                    <p class="character-ability">Otorga cada 120s un 15% de velocidad de movimiento. Al entrar en combate con menos de 50 VD, automáticamente se cura solo y recibes un escudo de 200 VD.</p>
                     <div class="price-row">
                         <div class="price-item gold">🪙 5,000</div>
-                        <div class="price-item diamonds">💎 299</div>
+                        <div class="price-item diamonds">💎 200</div>
                     </div>
                     <div class="card-actions">
-                        <button class="btn-buy" onclick="buyCharacter('Chrono V2', 5000, 299)">Obtener</button>
-                        <button class="btn-gift" onclick="giftCharacter('Chrono V2', 5000, 'oro')">Regalar</button>
+                        <button class="btn-buy" id="btn-buy-Tivet" onclick="buyCharacter('Tivet', 5000, 200)">Obtener</button>
+                        <button class="btn-gift" onclick="giftCharacter('Tivet', 5000, 200)">Regalar</button>
                     </div>
                 </div>
             </div>
 
-            <!-- Personaje 4: KELLY NEO -->
+            <!-- Personaje 3: GALLET -->
             <div class="character-card">
-                <span class="rarity-tag epic">Épico</span>
+                <span class="rarity-tag ayudable">Habilidad Ayudable</span>
                 <div class="character-display">
-                    <div class="character-avatar-placeholder">KLY</div>
+                    <div class="character-avatar-placeholder">GALLET</div>
                 </div>
                 <div class="character-details">
-                    <h3 class="character-name">Kelly Neo</h3>
-                    <p class="character-ability">Velocidad Pura: El sprint se activa de forma constante reduciendo la fatiga del avatar un 20% en mapas extensos.</p>
+                    <h3 class="character-name">Gallet</h3>
+                    <p class="character-ability">Aumenta al máximo los puntos de escudo (máx 150). Cuando tus puntos de escudo están al mínimo, cada 60s se restablecen por completo al máximo.</p>
                     <div class="price-row">
-                        <div class="price-item gold">🪙 4,000</div>
-                        <div class="price-item diamonds">💎 199</div>
+                        <div class="price-item gold">🪙 5,000</div>
+                        <div class="price-item diamonds">💎 200</div>
                     </div>
                     <div class="card-actions">
-                        <button class="btn-buy" onclick="buyCharacter('Kelly Neo', 4000, 199)">Obtener</button>
-                        <button class="btn-gift" onclick="giftCharacter('Kelly Neo', 4000, 'oro')">Regalar</button>
+                        <button class="btn-buy" id="btn-buy-Gallet" onclick="buyCharacter('Gallet', 5000, 200)">Obtener</button>
+                        <button class="btn-gift" onclick="giftCharacter('Gallet', 5000, 200)">Regalar</button>
                     </div>
                 </div>
             </div>
@@ -239,7 +220,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
-        import { getFirestore, doc, getDoc, updateDoc, collection, addDoc, query, where, getDocs } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, updateDoc, arrayUnion, collection, addDoc, query, where, getDocs } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDeUPVDX40AFX-W_crtUWm0TsXS2smx1zo",
@@ -258,8 +239,8 @@
         let miNombre = "Remitente";
         let saldoOro = 0;
         let saldoDiamantes = 0;
+        let misPersonajes = [];
 
-        // Lista negra básica para filtrar mensajes inapropiados
         const palabrasProhibidas = ["mierda", "puto", "puta", "hacker", "hack", "pendejo", "culiao", "marico"];
 
         onAuthStateChanged(auth, async (user) => {
@@ -267,53 +248,85 @@
                 window.location.replace("../index.html");
             } else {
                 currentUserDocRef = doc(db, "usuarios", user.uid);
-                const docSnap = await getDoc(currentUserDocRef);
-                if (docSnap.exists()) {
-                    const data = docSnap.data();
-                    saldoOro = data.oro || 0;
-                    saldoDiamantes = data.diamantes || 0;
-                    miNombre = data.username || "Alguien";
-                    
-                    document.getElementById("store-gold").textContent = Number(saldoOro).toLocaleString();
-                    document.getElementById("store-diamonds").textContent = saldoDiamantes;
-                }
+                await actualizarDatosUsuario();
             }
         });
 
-        // COMPRA DIRECTA TRADICIONAL
+        async function actualizarDatosUsuario() {
+            if (!currentUserDocRef) return;
+            const docSnap = await getDoc(currentUserDocRef);
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                saldoOro = data.oro || 0;
+                saldoDiamantes = data.diamantes || 0;
+                miNombre = data.username || "Alguien";
+                misPersonajes = data.personajes || [];
+                
+                document.getElementById("store-gold").textContent = Number(saldoOro).toLocaleString();
+                document.getElementById("store-diamonds").textContent = saldoDiamantes;
+
+                // Bloqueador de compras repetidas
+                verifyOwnedCharacters();
+            }
+        }
+
+        function verifyOwnedCharacters() {
+            const listado = ["Tamaki", "Tivet", "Gallet"];
+            listado.forEach(pj => {
+                const btn = document.getElementById(`btn-buy-${pj}`);
+                if (btn) {
+                    if (misPersonajes.includes(pj)) {
+                        btn.textContent = "Ya lo tienes";
+                        btn.disabled = true;
+                    } else {
+                        btn.textContent = "Obtener";
+                        btn.disabled = false;
+                    }
+                }
+            });
+        }
+
+        // COMPRA DIRECTA PARA UNO MISMO (CON VALIDACIÓN ANTI-DUPLICADOS)
         window.buyCharacter = async function(nombre, costoOro, costoDiamantes) {
             if (!currentUserDocRef) return;
 
+            if (misPersonajes.includes(nombre)) {
+                alert("Ya posees este personaje.");
+                return;
+            }
+
             if (saldoOro >= costoOro) {
-                if (confirm(`¿Deseas comprar a ${nombre} por 🪙 ${costoOro.toLocaleString()} de oro?`)) {
+                if (confirm(`¿Deseas obtener a ${nombre} por 🪙 ${costoOro.toLocaleString()} monedas?`)) {
                     try {
                         saldoOro -= costoOro;
-                        await updateDoc(currentUserDocRef, { oro: saldoOro });
-                        document.getElementById("store-gold").textContent = saldoOro.toLocaleString();
-                        alert(`¡Has adquirido con éxito a ${nombre}!`);
+                        // Resta monedas e inyecta el personaje en la lista del usuario
+                        await updateDoc(currentUserDocRef, { 
+                            oro: saldoOro,
+                            personajes: arrayUnion(nombre)
+                        });
+                        await actualizarDatosUsuario();
+                        alert(`¡Has adquirido a ${nombre} con éxito!`);
                     } catch (error) {
                         console.error("Error al procesar la compra:", error);
                     }
                 }
             } else {
-                alert("Oro insuficiente para realizar la transacción.");
+                alert("Monedas insuficientes para realizar la transacción.");
             }
         };
 
-        // 🎁 NUEVO SISTEMA REAL DE REGALOS CON CONEXIÓN FIRESTORE
-        window.giftCharacter = async function(nombrePersonaje, costo, tipoMoneda) {
+        // 🎁 SISTEMA DE REGALOS INTEGRADO
+        window.giftCharacter = async function(nombrePersonaje, costoOro, costoDiamantes) {
             if (!currentUserDocRef) return;
 
-            // Verificar si el remitente tiene saldo suficiente antes de pedir datos
-            if (tipoMoneda === 'oro' && saldoOro < costo) {
-                alert("No tienes suficiente oro para hacer este regalo.");
+            if (saldoOro < costoOro) {
+                alert("No tienes suficientes monedas para realizar este regalo.");
                 return;
             }
 
-            const targetId = prompt("Introduce el ID de tu amigo:");
-            if (!targetId) return;
+            const targetId = prompt("Introduce el ID del jugador al que deseas regalarle:");
+            if (!targetId || targetId.trim() === "") return;
 
-            // Buscamos al amigo en la base de datos por su 'gameId'
             const q = query(collection(db, "usuarios"), where("gameId", "==", targetId.trim()));
             const querySnapshot = await getDocs(q);
 
@@ -322,22 +335,19 @@
                 return;
             }
 
-            // Si existe, extraemos sus datos reales
             const amigoDoc = querySnapshot.docs[0];
             const amigoData = amigoDoc.data();
-            const amigoUid = amigoDoc.id; // UID real de Firebase para inyectarle el regalo
+            const amigoUid = amigoDoc.id;
             const amigoNombre = amigoData.username;
 
-            // Confirmación vía JavaScript nativa estructurada exacta
+            // Alerta nativa JavaScript estructurada exacta
             const confirmacion = confirm(`¿Quieres regalarle a este jugador?\n\nID: ${targetId}\nNombre: ${amigoNombre}`);
             if (!confirmacion) return;
 
-            // Solicitar mensaje opcional
-            let mensajeRegalo = prompt("Escribe un mensaje para tu regalo (Dejar vacío para el por defecto):");
+            let mensajeRegalo = prompt("Escribe un mensaje para tu regalo:");
             if (!mensajeRegalo || mensajeRegalo.trim() === "") {
                 mensajeRegalo = "¡Disfruta mi regalo!";
             } else {
-                // Filtro para que no sea inapropiado
                 const contieneInsulto = palabrasProhibidas.some(palabra => mensajeRegalo.toLowerCase().includes(palabra));
                 if (contieneInsulto) {
                     mensajeRegalo = "¡Disfruta mi regalo!";
@@ -345,14 +355,12 @@
             }
 
             try {
-                // Restar dinero al remitente
-                if (tipoMoneda === 'oro') {
-                    saldoOro -= costo;
-                    await updateDoc(currentUserDocRef, { oro: saldoOro });
-                    document.getElementById("store-gold").textContent = saldoOro.toLocaleString();
-                }
+                // Se le descuentan las monedas al remitente
+                saldoOro -= costoOro;
+                await updateDoc(currentUserDocRef, { oro: saldoOro });
+                document.getElementById("store-gold").textContent = saldoOro.toLocaleString();
 
-                // Inyectar regalo en el buzón /game/inbox del destinatario
+                // Se deposita el objeto directo en el inbox del destinatario
                 const buzonRef = collection(db, "usuarios", amigoUid, "buzon");
                 await addDoc(buzonRef, {
                     remitenteNombre: miNombre,
@@ -363,11 +371,12 @@
                     reclamado: false
                 });
 
-                alert(`¡Regalo enviado con éxito a ${amigoNombre}! Se le descontaron 🪙 ${costo.toLocaleString()} de oro.`);
+                alert(`¡Regalo enviado con éxito a ${amigoNombre}!`);
+                await actualizarDatosUsuario();
 
             } catch (err) {
-                console.error("Error al procesar el envío del regalo:", err);
-                alert("Hubo un error de red al procesar el regalo.");
+                console.error("Error al enviar el regalo:", err);
+                alert("Ocurrió un error en el servidor al tramitar el regalo.");
             }
         };
     </script>
