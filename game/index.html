@@ -4,9 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Frontera-X | Lobby Oficial</title>
+    <!-- Favicon saliendo a la raíz -->
+    <link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=JetBrains+Mono:wght=700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght=400;600;700;900&family=JetBrains+Mono:wght=700&display=swap" rel="stylesheet">
     
     <style>
         :root {
@@ -31,7 +34,7 @@
             position: relative;
         }
 
-        /* --- INTERFAZ HUD ORIGINAL (image_ac8655.png) --- */
+        /* HUD original */
         .lobby-ui {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             padding: 25px 40px; display: flex; flex-direction: column;
@@ -39,7 +42,6 @@
         }
         .lobby-ui * { pointer-events: auto; }
 
-        /* SECCIÓN SUPERIOR */
         .top-section { display: flex; justify-content: space-between; align-items: flex-start; }
         
         .player-profile-box {
@@ -63,7 +65,6 @@
         .currency-pill.gold span { color: var(--accent-yellow); }
         .currency-pill.diamonds span { color: #00bfff; }
 
-        /* SECCIÓN CENTRAL (MENÚ LATERAL IZQUIERDO) */
         .middle-section { display: flex; align-items: center; flex-grow: 1; }
         .left-menu { display: flex; flex-direction: column; gap: 12px; width: 180px; }
         
@@ -75,7 +76,6 @@
         }
         .btn-menu-left:hover { border-color: #fff; background: rgba(255,255,255,0.04); transform: translateX(4px); }
 
-        /* SECCIÓN INFERIOR */
         .bottom-section { display: flex; justify-content: space-between; align-items: flex-end; }
         
         .bottom-left-group { display: flex; gap: 10px; background: rgba(6, 9, 16, 0.5); padding: 8px; border-radius: 10px; border: 1px solid var(--border-glass); }
@@ -105,7 +105,7 @@
         }
         .btn-start-game:hover { transform: scale(1.02); opacity: 0.95; }
 
-        /* MODAL DE PRESETS */
+        /* Modal Presets */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(10px);
@@ -142,7 +142,7 @@
 </head>
 <body>
 
-    <!-- 📌 VISOR 3D DEL JUGADOR INTERACTIVO DETRÁS DEL HUD -->
+    <!-- Renderizado 3D de Personaje Detrás del HUD -->
     <model-viewer id="lobby-character-3d" 
                   src="" 
                   camera-controls 
@@ -154,7 +154,7 @@
                   style="position: fixed; top: 0; left: 0; width: 100%; height: 100vh; z-index: 1; pointer-events: auto;">
     </model-viewer>
 
-    <!-- INTERFAZ HUD -->
+    <!-- Capa del HUD principal -->
     <div class="lobby-ui">
         <div class="top-section">
             <div class="player-profile-box">
@@ -173,7 +173,7 @@
                 <button class="btn-menu-left" onclick="window.location.href='store.html'">🛒 Tienda</button>
                 <button class="btn-menu-left" onclick="alert('Luck Royale próximamente')">🎯 Luck Royale</button>
                 <button class="btn-menu-left" onclick="alert('Pase Booyah próximamente')">🎫 Pase Booyah</button>
-                <button class="btn-menu-left" onclick="window.location.href='inbox.html'">📬 Misiones / Inbox</button>
+                <button class="btn-menu-left" onclick="alert('Misiones próximamente')">📬 Misiones</button>
             </div>
         </div>
 
@@ -193,7 +193,7 @@
         </div>
     </div>
 
-    <!-- MODAL PRESETS -->
+    <!-- Modal de equipamiento Presets -->
     <div class="modal-overlay" id="presetModalOverlay">
         <div class="preset-modal">
             <div class="preset-sidebar">
@@ -278,7 +278,6 @@
                     misPersonajes = data.personajes || [];
                     if (data.presets) todosLosPresets = data.presets;
 
-                    // 📌 ENRUTAMIENTO DEL MODELO 3D REAL SEGÚN EL GÉNERO
                     const visor3D = document.getElementById("lobby-character-3d");
                     if (visor3D) {
                         if (data.genero === "mujer") {
