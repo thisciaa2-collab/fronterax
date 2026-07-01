@@ -174,6 +174,35 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
+        // --- SISTEMA DE AUDIO NATIVO DE THREE.JS ---
+        const audioListener = new THREE.AudioListener();
+        const backgroundMusic = new THREE.Audio(audioListener);
+        let musicStarted = false;
+
+        function startLobbyMusic() {
+            if (musicStarted) return;
+            
+            const audioLoader = new THREE.AudioLoader();
+            // Ruta relativa hacia tu archivo de sonido alojado en tu servidor local/producción
+            audioLoader.load('./LobbyMusic.wav', (buffer) => {
+                backgroundMusic.setBuffer(buffer);
+                backgroundMusic.setLoop(true);
+                backgroundMusic.setVolume(0.4); // Volumen equilibrado al 40%
+                backgroundMusic.play();
+                musicStarted = true;
+                
+                // Limpiamos los eventos globales una vez que arranca para liberar memoria
+                window.removeEventListener('click', startLobbyMusic);
+                window.removeEventListener('touchstart', startLobbyMusic);
+            }, undefined, (err) => {
+                console.error("Error al cargar el archivo de audio LobbyMusic.wav:", err);
+            });
+        }
+
+        // Eventos de interacción física para ganarle al bloqueo de Autoplay del navegador
+        window.addEventListener('click', startLobbyMusic);
+        window.addEventListener('touchstart', startLobbyMusic);
+
         onAuthStateChanged(auth, async (user) => {
             if (!user) {
                 window.location.replace("../index.html");
@@ -194,6 +223,9 @@
 
         // --- ENTORNO THREE.JS ---
         const scene = new THREE.Scene();
+        // Vinculamos el detector de audio a la cámara del juego
+        camera.add(audioListener);
+
         scene.add(new THREE.AmbientLight(0xffffff, 0.85));
         const light = new THREE.DirectionalLight(0xffffff, 0.9);
         light.position.set(4, 10, 6);
@@ -208,7 +240,6 @@
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         document.getElementById('game-canvas').appendChild(renderer.domElement);
 
-        // Variables globales para controlar el tiempo y las animaciones
         let mixer = null;
         const clock = new THREE.Clock();
 
@@ -233,18 +264,17 @@
                 character.scale.set(1.1, 1.1, 1.1);
                 scene.add(character);
 
-                // 🎬 LÓGICA DE ANIMACIÓN INYECTADA:
-                // Si el archivo contiene animaciones internas, tomamos la primera (índice 0, típicamente la pose por defecto o idle)
                 if (gltf.animations && gltf.animations.length > 0) {
                     mixer = new THREE.AnimationMixer(character);
                     const action = mixer.clipAction(gltf.animations[0]);
                     action.play();
-                } else {
-                    console.warn("Este modelo no incluye pistas de animación integradas en el archivo.");
                 }
                 
                 document.getElementById("loading-screen").style.display = "none";
                 
+                // Intentamos activar la música aquí también por si el usuario ya interactuó con la interfaz previa
+                startLobbyMusic();
+
                 function rotateModel() {
                     requestAnimationFrame(rotateModel);
                     character.rotation.y += 0.004;
@@ -262,11 +292,9 @@
             });
         }
 
-        // Bucle de renderizado actualizado para refrescar los fotogramas de la animación en tiempo real
         function renderLoop() {
             requestAnimationFrame(renderLoop);
             
-            // Si el reproductor de animaciones está activo, actualiza el esqueleto basándose en el reloj interno
             if (mixer) {
                 const delta = clock.getDelta();
                 mixer.update(delta);
