@@ -208,11 +208,12 @@
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         document.getElementById('game-canvas').appendChild(renderer.domElement);
 
+        // Variables globales para controlar el tiempo y las animaciones
+        let mixer = null;
+        const clock = new THREE.Clock();
+
         function loadCharacterModel() {
             const loader = new THREE.GLTFLoader();
-            
-            // 🚀 SOLUCIÓN DEFINITIVA: Convertimos tu URL a dominio de contenido crudo puro ('dl.dropboxusercontent.com')
-            // Esto entrega el archivo al instante, sin redirecciones pesadas y con CORS totalmente ABIERTO por defecto.
             const urlFinal = "https://dl.dropboxusercontent.com/scl/fi/l1mn0t9arcqsa5cs7d2gq/Ch06_nonPBR.glb?rlkey=bn8cubv67qyt7xvtej02733qc&st=u1r9ro4p";
 
             loader.load(urlFinal, (gltf) => {
@@ -231,14 +232,24 @@
                 character.position.set(0, 0, 0);
                 character.scale.set(1.1, 1.1, 1.1);
                 scene.add(character);
+
+                // 🎬 LÓGICA DE ANIMACIÓN INYECTADA:
+                // Si el archivo contiene animaciones internas, tomamos la primera (índice 0, típicamente la pose por defecto o idle)
+                if (gltf.animations && gltf.animations.length > 0) {
+                    mixer = new THREE.AnimationMixer(character);
+                    const action = mixer.clipAction(gltf.animations[0]);
+                    action.play();
+                } else {
+                    console.warn("Este modelo no incluye pistas de animación integradas en el archivo.");
+                }
                 
                 document.getElementById("loading-screen").style.display = "none";
                 
-                function animateModel() {
-                    requestAnimationFrame(animateModel);
+                function rotateModel() {
+                    requestAnimationFrame(rotateModel);
                     character.rotation.y += 0.004;
                 }
-                animateModel();
+                rotateModel();
 
             }, (xhr) => {
                 if (xhr.total > 0) {
@@ -251,8 +262,16 @@
             });
         }
 
+        // Bucle de renderizado actualizado para refrescar los fotogramas de la animación en tiempo real
         function renderLoop() {
             requestAnimationFrame(renderLoop);
+            
+            // Si el reproductor de animaciones está activo, actualiza el esqueleto basándose en el reloj interno
+            if (mixer) {
+                const delta = clock.getDelta();
+                mixer.update(delta);
+            }
+
             renderer.setClearColor(0x070a14);
             renderer.render(scene, camera);
         }
