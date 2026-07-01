@@ -3,243 +3,163 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Frontera-X | Tienda de Personajes</title>
+    <title>Frontera-X | Sala Principal</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght=400;600;700;900&family=JetBrains+Mono:wght=700&display=swap" rel="stylesheet">
     
     <style>
         :root {
-            --bg-dark: #06080c;
-            --bg-glass: rgba(10, 14, 26, 0.75);
+            --bg-glass: rgba(10, 14, 26, 0.65);
             --border-glass: rgba(255, 255, 255, 0.12);
             --accent: #00ffcc;
-            --accent-purple: #9d4edd;
             --accent-yellow: #ffcc00;
             --text-light: #ffffff;
-            --text-muted: #94a3b8;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
 
         body { 
-            background-color: var(--bg-dark); 
-            font-family: 'Inter', sans-serif; 
-            color: var(--text-light);
-            min-height: 100vh;
-            overflow-x: hidden;
+            margin: 0; overflow: hidden; background-color: #06080c; 
+            font-family: 'Inter', sans-serif; width: 100vw; height: 100vh;
         }
 
-        .bg-glow {
-            position: fixed; top: -10%; left: -10%; width: 50%; height: 50%;
-            background: radial-gradient(circle, rgba(0, 255, 204, 0.08) 0%, transparent 70%);
-            z-index: -1; pointer-events: none;
+        .hud-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 10; display: flex;
+            flex-direction: column; justify-content: space-between; padding: 20px;
         }
-        .bg-glow-right {
-            position: fixed; bottom: -10%; right: -10%; width: 50%; height: 50%;
-            background: radial-gradient(circle, rgba(157, 78, 221, 0.08) 0%, transparent 70%);
-            z-index: -1; pointer-events: none;
-        }
+        .interactive { pointer-events: auto; }
 
-        .top-navbar {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 20px 40px; background: rgba(5, 7, 12, 0.8);
-            border-bottom: 1px solid var(--border-glass); backdrop-filter: blur(12px);
-            position: sticky; top: 0; z-index: 100;
-        }
+        .top-bar { display: flex; justify-content: space-between; align-items: flex-start; width: 100%; }
 
-        .nav-left { display: flex; align-items: center; gap: 20px; }
-        
-        .back-btn {
+        .user-profile {
             background: var(--bg-glass); border: 1px solid var(--border-glass);
-            color: var(--text-light); padding: 10px 20px; border-radius: 8px;
-            font-size: 13px; font-weight: 700; cursor: pointer; text-transform: uppercase;
-            transition: all 0.2s ease;
+            backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+            padding: 10px 20px; border-radius: 12px; display: flex; align-items: center; gap: 14px;
         }
-        .back-btn:hover { border-color: var(--accent); color: var(--accent); transform: translateX(-4px); }
 
-        .store-title { font-size: 24px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; }
-        .store-title span { color: var(--accent); }
+        .avatar-box {
+            width: 44px; height: 44px; background: linear-gradient(135deg, var(--accent) 0%, #006655 100%);
+            border-radius: 8px; display: flex; align-items: center; justify-content: center;
+            font-weight: 900; font-size: 20px; color: #000;
+        }
 
-        .nav-right { display: flex; gap: 14px; }
-        .currency-box {
-            background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-glass);
-            padding: 10px 20px; border-radius: 10px; font-size: 14px; font-weight: 700;
+        .user-info { display: flex; flex-direction: column; }
+        .user-name { font-size: 15px; font-weight: 700; color: var(--text-light); }
+        .user-id { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--accent); margin-top: 2px; }
+
+        .resources { display: flex; gap: 12px; }
+        .resource-item {
+            background: var(--bg-glass); border: 1px solid var(--border-glass); backdrop-filter: blur(16px);
+            padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 700; color: #fff;
             display: flex; align-items: center; gap: 8px;
         }
-        .currency-box.gold span { color: var(--accent-yellow); }
-        .currency-box.diamonds span { color: #00bfff; }
+        .resource-item.gold span { color: var(--accent-yellow); }
+        .resource-item.diamonds span { color: #00bfff; }
 
-        .main-container { max-width: 1400px; margin: 40px auto; padding: 0 20px; }
+        .main-body { display: flex; justify-content: space-between; align-items: center; flex-grow: 1; width: 100%; }
+        .main-body .side-menu { display: flex; flex-direction: column; gap: 10px; }
 
-        .products-grid {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 25px; margin-top: 20px;
+        .side-btn {
+            background: var(--bg-glass); border: 1px solid var(--border-glass); backdrop-filter: blur(10px);
+            color: #cbd5e1; padding: 14px 24px; border-radius: 10px; font-size: 13px; font-weight: 700;
+            text-transform: uppercase; cursor: pointer; min-width: 180px; text-align: left;
+            transition: all 0.2s ease;
+        }
+        .side-btn:hover { color: #fff; border-color: var(--accent); transform: translateX(6px); background: rgba(0, 255, 204, 0.15); }
+
+        .bottom-bar { display: flex; justify-content: space-between; align-items: flex-end; width: 100%; }
+
+        .bottom-nav {
+            display: flex; gap: 10px; background: rgba(5, 7, 12, 0.6);
+            padding: 6px; border-radius: 12px; border: 1px solid var(--border-glass); backdrop-filter: blur(10px);
+        }
+        .nav-item { padding: 10px 20px; color: #94a3b8; font-size: 11px; font-weight: 700; text-transform: uppercase; cursor: pointer; }
+        .nav-item:hover { color: var(--accent); }
+
+        .start-panel { display: flex; flex-direction: column; gap: 10px; align-items: flex-end; }
+        .mode-selector {
+            background: var(--bg-glass); border: 1px solid var(--border-glass); backdrop-filter: blur(12px);
+            padding: 12px 24px; border-radius: 12px; text-align: right; min-width: 220px; cursor: pointer;
+        }
+        .mode-title { font-size: 14px; font-weight: 800; color: #fff; text-transform: uppercase; }
+        .map-sub { font-size: 11px; color: var(--accent); font-weight: 600; text-transform: uppercase; }
+
+        .start-btn {
+            background: linear-gradient(135deg, #ffcc00 0%, #ff9900 100%); border: none; color: #000;
+            padding: 18px 60px; border-radius: 12px; font-size: 22px; font-weight: 900; cursor: pointer;
+            box-shadow: 0 6px 25px rgba(255, 153, 0, 0.4); text-transform: uppercase;
         }
 
-        .character-card {
-            background: var(--bg-glass); border: 1px solid var(--border-glass);
-            border-radius: 16px; overflow: hidden; backdrop-filter: blur(10px);
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-            display: flex; flex-direction: column; position: relative;
-        }
-        .character-card:hover {
-            transform: translateY(-8px); border-color: var(--accent);
-            box-shadow: 0 10px 30px rgba(0, 255, 204, 0.1);
-        }
-
-        .character-display {
-            width: 100%; height: 320px; background: linear-gradient(180deg, rgba(10,14,26,0) 40%, rgba(6,8,12,1) 100%), #121824;
-            display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden;
-        }
+        #game-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
         
-        .character-avatar-placeholder {
-            font-size: 72px; font-weight: 900; opacity: 0.15; color: var(--text-light);
-            transition: all 0.3s ease;
+        #loading-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #06080c;
+            z-index: 999; display: flex; flex-direction: column; justify-content: center; align-items: center;
+            font-family: 'JetBrains Mono', monospace; color: var(--accent); font-size: 14px; gap: 10px;
         }
-        .character-card:hover .character-avatar-placeholder { opacity: 0.4; transform: scale(1.1); }
-
-        .rarity-tag {
-            position: absolute; top: 15px; left: 15px; padding: 4px 10px; border-radius: 6px;
-            font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;
-        }
-        .rarity-tag.legendary { background: rgba(255, 153, 0, 0.2); border: 1px solid #ff9900; color: #ff9900; }
-        .rarity-tag.epic { background: rgba(157, 78, 221, 0.2); border: 1px solid var(--accent-purple); color: var(--accent-purple); }
-
-        .character-details { padding: 20px; display: flex; flex-direction: column; gap: 12px; flex-grow: 1; }
-        .character-name { font-size: 20px; font-weight: 800; text-transform: uppercase; }
-        .character-ability { font-size: 12px; color: var(--text-muted); line-height: 1.4; min-height: 34px; }
-
-        .price-row { display: flex; align-items: center; gap: 12px; margin-top: auto; padding-top: 10px; }
-        .price-item { font-size: 16px; font-weight: 700; display: flex; align-items: center; gap: 4px; }
-        .price-item.gold { color: var(--accent-yellow); }
-        .price-item.diamonds { color: #00bfff; }
-
-        .card-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
-        
-        .btn-buy {
-            background: linear-gradient(135deg, var(--accent) 0%, #006655 100%);
-            border: none; color: #000; padding: 12px; border-radius: 8px;
-            font-size: 12px; font-weight: 800; text-transform: uppercase; cursor: pointer;
-            transition: all 0.2s ease; text-align: center;
-        }
-        .btn-buy:hover { opacity: 0.9; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0, 255, 204, 0.2); }
-
-        .btn-gift {
-            background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-glass);
-            color: var(--text-light); padding: 12px; border-radius: 8px;
-            font-size: 12px; font-weight: 700; text-transform: uppercase; cursor: pointer;
-            transition: all 0.2s ease; text-align: center;
-        }
-        .btn-gift:hover { background: rgba(255, 255, 255, 0.1); border-color: var(--accent); color: var(--accent); }
+        .progress-bar-container { width: 250px; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden; margin-top: 5px; }
+        .progress-bar-fill { width: 0%; height: 100%; background: var(--accent); transition: width 0.1s ease; }
     </style>
 </head>
 <body>
 
-    <div class="bg-glow"></div>
-    <div class="bg-glow-right"></div>
-
-    <header class="top-navbar">
-        <div class="nav-left">
-            <button class="back-btn" onclick="window.location.href='index.html'">⬅ Volver</button>
-            <h1 class="store-title">TIENDA // <span>PERSONAJES</span></h1>
+    <div id="loading-screen">
+        <span id="loading-msg">SINCROZANIZANDO MUNDO 3D...</span>
+        <div class="progress-bar-container">
+            <div class="progress-bar-fill" id="load-progress"></div>
         </div>
-        <div class="nav-right">
-            <div class="currency-box gold">🪙 <span id="store-gold">0</span></div>
-            <div class="currency-box diamonds">💎 <span id="store-diamonds">0</span></div>
+    </div>
+    
+    <div id="game-canvas"></div>
+
+    <div class="hud-overlay">
+        <div class="top-bar">
+            <div class="user-profile interactive">
+                <div class="avatar-box" id="avatar-letter">-</div>
+                <div class="user-info">
+                    <span class="user-name" id="profile-name">Cargando...</span>
+                    <span class="user-id" id="profile-id">ID: ---------</span>
+                </div>
+            </div>
+            <div class="resources interactive">
+                <div class="resource-item gold">🪙 <span id="val-gold">0</span></div>
+                <div class="resource-item diamonds">💎 <span id="val-diamonds">0</span></div>
+            </div>
         </div>
-    </header>
 
-    <main class="main-container">
-        <div class="products-grid">
-            
-            <!-- Personaje 1: TAMAKI -->
-            <div class="character-card">
-                <span class="rarity-tag legendary">Legendario</span>
-                <div class="character-display">
-                    <div class="character-avatar-placeholder">TMK</div>
-                </div>
-                <div class="character-details">
-                    <h3 class="character-name">Tamaki</h3>
-                    <p class="character-ability">Escudo Sónico: Despliega una barrera de energía que absorbe el 30% del daño infligido por bots de asalto.</p>
-                    <div class="price-row">
-                        <div class="price-item gold">🪙 8,000</div>
-                        <div class="price-item diamonds">💎 499</div>
-                    </div>
-                    <div class="card-actions">
-                        <button class="btn-buy" onclick="buyCharacter('Tamaki', 8000, 499)">Obtener</button>
-                        <button class="btn-gift" onclick="giftCharacter('Tamaki', 8000, 'oro')">Regalar</button>
-                    </div>
-                </div>
+        <div class="main-body">
+            <div class="side-menu interactive">
+                <button class="side-btn" onclick="window.location.href='store.html'">🛒 Tienda</button>
+                <button class="side-btn">🎯 Luck Royale</button>
+                <button class="side-btn">🎫 Pase Booyah</button>
+                <button class="side-btn">📋 Misiones</button>
             </div>
-
-            <!-- Personaje 2: ALOK PROTOTYPE -->
-            <div class="character-card">
-                <span class="rarity-tag legendary">Legendario</span>
-                <div class="character-display">
-                    <div class="character-avatar-placeholder">ALK</div>
-                </div>
-                <div class="character-details">
-                    <h3 class="character-name">Alok X</h3>
-                    <p class="character-ability">Ritmo de Frontera: Crea un aura de 5m que aumenta la velocidad de movimiento un 15% y recupera HP gradualmente.</p>
-                    <div class="price-row">
-                        <div class="price-item gold">🪙 10,000</div>
-                        <div class="price-item diamonds">💎 599</div>
-                    </div>
-                    <div class="card-actions">
-                        <button class="btn-buy" onclick="buyCharacter('Alok X', 10000, 599)">Obtener</button>
-                        <button class="btn-gift" onclick="giftCharacter('Alok X', 10000, 'oro')">Regalar</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Personaje 3: CHRONO V2 -->
-            <div class="character-card">
-                <span class="rarity-tag epic">Épico</span>
-                <div class="character-display">
-                    <div class="character-avatar-placeholder">CHR</div>
-                </div>
-                <div class="character-details">
-                    <h3 class="character-name">Chrono V2</h3>
-                    <p class="character-ability">Túnel del Tiempo: Genera un campo de fuerza estático que detiene proyectiles enemigos durante 4 segundos.</p>
-                    <div class="price-row">
-                        <div class="price-item gold">🪙 5,000</div>
-                        <div class="price-item diamonds">💎 299</div>
-                    </div>
-                    <div class="card-actions">
-                        <button class="btn-buy" onclick="buyCharacter('Chrono V2', 5000, 299)">Obtener</button>
-                        <button class="btn-gift" onclick="giftCharacter('Chrono V2', 5000, 'oro')">Regalar</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Personaje 4: KELLY NEO -->
-            <div class="character-card">
-                <span class="rarity-tag epic">Épico</span>
-                <div class="character-display">
-                    <div class="character-avatar-placeholder">KLY</div>
-                </div>
-                <div class="character-details">
-                    <h3 class="character-name">Kelly Neo</h3>
-                    <p class="character-ability">Velocidad Pura: El sprint se activa de forma constante reduciendo la fatiga del avatar un 20% en mapas extensos.</p>
-                    <div class="price-row">
-                        <div class="price-item gold">🪙 4,000</div>
-                        <div class="price-item diamonds">💎 199</div>
-                    </div>
-                    <div class="card-actions">
-                        <button class="btn-buy" onclick="buyCharacter('Kelly Neo', 4000, 199)">Obtener</button>
-                        <button class="btn-gift" onclick="giftCharacter('Kelly Neo', 4000, 'oro')">Regalar</button>
-                    </div>
-                </div>
-            </div>
-
         </div>
-    </main>
+
+        <div class="bottom-bar">
+            <div class="bottom-nav interactive">
+                <div class="nav-item">📦 Vault</div>
+                <div class="nav-item">🔫 Weapon</div>
+            </div>
+            <div class="start-panel interactive">
+                <div class="mode-selector">
+                    <div class="mode-title">Clasificatoria Bot</div>
+                    <div class="map-sub">Mapa: Bermudas</div>
+                </div>
+                <button class="start-btn">START</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
-        import { getFirestore, doc, getDoc, updateDoc, collection, addDoc, query, where, getDocs } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDeUPVDX40AFX-W_crtUWm0TsXS2smx1zo",
@@ -253,123 +173,142 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
-        
-        let currentUserDocRef = null;
-        let miNombre = "Remitente";
-        let saldoOro = 0;
-        let saldoDiamantes = 0;
 
-        // Lista negra básica para filtrar mensajes inapropiados
-        const palabrasProhibidas = ["mierda", "puto", "puta", "hacker", "hack", "pendejo", "culiao", "marico"];
+        // --- ENTORNO THREE.JS (Declaraciones iniciales ordenadas correctamente) ---
+        const scene = new THREE.Scene();
+        
+        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(0, 1.4, 3.0);
+        camera.lookAt(0, 1.0, 0);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        document.getElementById('game-canvas').appendChild(renderer.domElement);
+
+        scene.add(new THREE.AmbientLight(0xffffff, 0.85));
+        const light = new THREE.DirectionalLight(0xffffff, 0.9);
+        light.position.set(4, 10, 6);
+        scene.add(light);
+
+        // Variables globales para el control de animación y música
+        let mixer = null;
+        const clock = new THREE.Clock();
+        
+        const audioListener = new THREE.AudioListener();
+        camera.add(audioListener); // Arreglado: 'camera' ya está inicializado arriba
+        
+        const backgroundMusic = new THREE.Audio(audioListener);
+        let musicStarted = false;
+
+        function startLobbyMusic() {
+            if (musicStarted) return;
+            
+            const audioLoader = new THREE.AudioLoader();
+            audioLoader.load('./LobbyMusic.wav', (buffer) => {
+                backgroundMusic.setBuffer(buffer);
+                backgroundMusic.setLoop(true);
+                backgroundMusic.setVolume(0.4);
+                backgroundMusic.play();
+                musicStarted = true;
+                
+                window.removeEventListener('click', startLobbyMusic);
+                window.removeEventListener('touchstart', startLobbyMusic);
+            }, undefined, (err) => {
+                console.error("Error al cargar LobbyMusic.wav:", err);
+            });
+        }
+
+        window.addEventListener('click', startLobbyMusic);
+        window.addEventListener('touchstart', startLobbyMusic);
 
         onAuthStateChanged(auth, async (user) => {
             if (!user) {
                 window.location.replace("../index.html");
             } else {
-                currentUserDocRef = doc(db, "usuarios", user.uid);
-                const docSnap = await getDoc(currentUserDocRef);
+                const docSnap = await getDoc(doc(db, "usuarios", user.uid));
                 if (docSnap.exists()) {
-                    const data = docSnap.data();
-                    saldoOro = data.oro || 0;
-                    saldoDiamantes = data.diamantes || 0;
-                    miNombre = data.username || "Alguien";
+                    const d = docSnap.data();
+                    document.getElementById("profile-name").textContent = d.username;
+                    document.getElementById("profile-id").textContent = "ID: " + d.gameId;
+                    document.getElementById("avatar-letter").textContent = d.username.charAt(0).toUpperCase();
+                    document.getElementById("val-gold").textContent = Number(d.oro).toLocaleString();
+                    document.getElementById("val-diamonds").textContent = d.diamantes;
                     
-                    document.getElementById("store-gold").textContent = Number(saldoOro).toLocaleString();
-                    document.getElementById("store-diamonds").textContent = saldoDiamantes;
+                    loadCharacterModel();
                 }
             }
         });
 
-        // COMPRA DIRECTA TRADICIONAL
-        window.buyCharacter = async function(nombre, costoOro, costoDiamantes) {
-            if (!currentUserDocRef) return;
+        function loadCharacterModel() {
+            const loader = new THREE.GLTFLoader();
+            
+            // 🚀 TU NUEVO PERSONAJE ANIMADO DE MIXAMO CONVERTIDO A GLB DIRECTO
+            const urlFinal = "https://dl.dropboxusercontent.com/scl/fi/coqtz064191supz8vv7e4/Defeated.glb?rlkey=ioica9w27zaxr84wr78aep09z&st=8ivgs82k";
 
-            if (saldoOro >= costoOro) {
-                if (confirm(`¿Deseas comprar a ${nombre} por 🪙 ${costoOro.toLocaleString()} de oro?`)) {
-                    try {
-                        saldoOro -= costoOro;
-                        await updateDoc(currentUserDocRef, { oro: saldoOro });
-                        document.getElementById("store-gold").textContent = saldoOro.toLocaleString();
-                        alert(`¡Has adquirido con éxito a ${nombre}!`);
-                    } catch (error) {
-                        console.error("Error al procesar la compra:", error);
+            loader.load(urlFinal, (gltf) => {
+                const character = gltf.scene;
+                
+                character.traverse((child) => {
+                    if (child.isMesh && child.material) {
+                        const materials = Array.isArray(child.material) ? child.material : [child.material];
+                        materials.forEach((mat) => {
+                            if (mat.map) mat.map.minFilter = THREE.LinearFilter;
+                            if (mat.normalMap) mat.normalMap.minFilter = THREE.LinearFilter;
+                        });
                     }
-                }
-            } else {
-                alert("Oro insuficiente para realizar la transacción.");
-            }
-        };
-
-        // 🎁 NUEVO SISTEMA REAL DE REGALOS CON CONEXIÓN FIRESTORE
-        window.giftCharacter = async function(nombrePersonaje, costo, tipoMoneda) {
-            if (!currentUserDocRef) return;
-
-            // Verificar si el remitente tiene saldo suficiente antes de pedir datos
-            if (tipoMoneda === 'oro' && saldoOro < costo) {
-                alert("No tienes suficiente oro para hacer este regalo.");
-                return;
-            }
-
-            const targetId = prompt("Introduce el ID de tu amigo:");
-            if (!targetId) return;
-
-            // Buscamos al amigo en la base de datos por su 'gameId'
-            const q = query(collection(db, "usuarios"), where("gameId", "==", targetId.trim()));
-            const querySnapshot = await getDocs(q);
-
-            if (querySnapshot.empty) {
-                alert("El ID introducido no corresponde a ningún jugador registrado.");
-                return;
-            }
-
-            // Si existe, extraemos sus datos reales
-            const amigoDoc = querySnapshot.docs[0];
-            const amigoData = amigoDoc.data();
-            const amigoUid = amigoDoc.id; // UID real de Firebase para inyectarle el regalo
-            const amigoNombre = amigoData.username;
-
-            // Confirmación vía JavaScript nativa estructurada exacta
-            const confirmacion = confirm(`¿Quieres regalarle a este jugador?\n\nID: ${targetId}\nNombre: ${amigoNombre}`);
-            if (!confirmacion) return;
-
-            // Solicitar mensaje opcional
-            let mensajeRegalo = prompt("Escribe un mensaje para tu regalo (Dejar vacío para el por defecto):");
-            if (!mensajeRegalo || mensajeRegalo.trim() === "") {
-                mensajeRegalo = "¡Disfruta mi regalo!";
-            } else {
-                // Filtro para que no sea inapropiado
-                const contieneInsulto = palabrasProhibidas.some(palabra => mensajeRegalo.toLowerCase().includes(palabra));
-                if (contieneInsulto) {
-                    mensajeRegalo = "¡Disfruta mi regalo!";
-                }
-            }
-
-            try {
-                // Restar dinero al remitente
-                if (tipoMoneda === 'oro') {
-                    saldoOro -= costo;
-                    await updateDoc(currentUserDocRef, { oro: saldoOro });
-                    document.getElementById("store-gold").textContent = saldoOro.toLocaleString();
-                }
-
-                // Inyectar regalo en el buzón /game/inbox del destinatario
-                const buzonRef = collection(db, "usuarios", amigoUid, "buzon");
-                await addDoc(buzonRef, {
-                    remitenteNombre: miNombre,
-                    tipo: "personaje",
-                    item: nombrePersonaje,
-                    mensaje: mensajeRegalo,
-                    fecha: new Date().toISOString(),
-                    reclamado: false
                 });
 
-                alert(`¡Regalo enviado con éxito a ${amigoNombre}! Se le descontaron 🪙 ${costo.toLocaleString()} de oro.`);
+                character.position.set(0, 0, 0);
+                character.scale.set(1.1, 1.1, 1.1);
+                scene.add(character);
 
-            } catch (err) {
-                console.error("Error al procesar el envío del regalo:", err);
-                alert("Hubo un error de red al procesar el regalo.");
+                // Activador automático para la pista de Mixamo
+                if (gltf.animations && gltf.animations.length > 0) {
+                    mixer = new THREE.AnimationMixer(character);
+                    const action = mixer.clipAction(gltf.animations[0]);
+                    action.play();
+                }
+                
+                document.getElementById("loading-screen").style.display = "none";
+                startLobbyMusic();
+
+                function rotateModel() {
+                    requestAnimationFrame(rotateModel);
+                    character.rotation.y += 0.004;
+                }
+                rotateModel();
+
+            }, (xhr) => {
+                // Arreglado: Ya no da error de inicialización porque no depende de 'mixer' para calcular la barra
+                if (xhr.total > 0) {
+                    const percent = (xhr.loaded / xhr.total) * 100;
+                    document.getElementById("load-progress").style.width = percent + "%";
+                }
+            }, (err) => {
+                console.error("Error cargando desde el CDN directo:", err);
+                document.getElementById("loading-screen").style.display = "none";
+            });
+        }
+
+        function renderLoop() {
+            requestAnimationFrame(renderLoop);
+            
+            if (mixer) {
+                const delta = clock.getDelta();
+                mixer.update(delta);
             }
-        };
+
+            renderer.setClearColor(0x070a14);
+            renderer.render(scene, camera);
+        }
+        renderLoop();
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
     </script>
 </body>
 </html>
