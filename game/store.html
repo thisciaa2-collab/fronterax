@@ -3,10 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Frontera-X | Tienda por Categorías</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght=400;600;700;900&family=JetBrains+Mono:wght=700&display=swap" rel="stylesheet">
+    <title>Frontera-X | Tienda Oficial</title>
+    <!-- Favicon saliendo a la raíz -->
+    <link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
     
     <style>
         :root {
@@ -19,164 +18,53 @@
             --text-light: #ffffff;
             --text-muted: #94a3b8;
         }
-
         * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
-
-        body { 
-            background-color: var(--bg-dark); 
-            font-family: 'Inter', sans-serif; 
-            color: var(--text-light);
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
-
-        .bg-glow {
-            position: fixed; top: -10%; left: -10%; width: 50%; height: 50%;
-            background: radial-gradient(circle, rgba(0, 255, 204, 0.08) 0%, transparent 70%);
-            z-index: -1; pointer-events: none;
-        }
-
-        .top-navbar {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 20px 40px; background: rgba(5, 7, 12, 0.8);
-            border-bottom: 1px solid var(--border-glass); backdrop-filter: blur(12px);
-            position: sticky; top: 0; z-index: 100;
-        }
-
-        .nav-left { display: flex; align-items: center; gap: 20px; }
-        
-        .back-btn {
-            background: var(--bg-glass); border: 1px solid var(--border-glass);
-            color: var(--text-light); padding: 10px 20px; border-radius: 8px;
-            font-size: 13px; font-weight: 700; cursor: pointer; text-transform: uppercase;
-            transition: all 0.2s ease;
-        }
-        .back-btn:hover { border-color: var(--accent); color: var(--accent); transform: translateX(-4px); }
-
-        .store-title { font-size: 24px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; }
+        body { background-color: var(--bg-dark); font-family: 'Inter', sans-serif; color: var(--text-light); min-height: 100vh; }
+        .top-navbar { display: flex; justify-content: space-between; align-items: center; padding: 20px 40px; background: rgba(5, 7, 12, 0.8); border-bottom: 1px solid var(--border-glass); backdrop-filter: blur(12px); position: sticky; top: 0; z-index: 100; }
+        .back-btn { background: var(--bg-glass); border: 1px solid var(--border-glass); color: var(--text-light); padding: 10px 20px; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; text-transform: uppercase; }
+        .store-title { font-size: 24px; font-weight: 900; text-transform: uppercase; }
         .store-title span { color: var(--accent); }
-
         .nav-right { display: flex; gap: 14px; }
-        .currency-box {
-            background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-glass);
-            padding: 10px 20px; border-radius: 10px; font-size: 14px; font-weight: 700;
-            display: flex; align-items: center; gap: 8px;
-        }
+        .currency-box { background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-glass); padding: 10px 20px; border-radius: 10px; font-size: 14px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
         .currency-box.gold span { color: var(--accent-yellow); }
         .currency-box.diamonds span { color: #00bfff; }
-
         .main-container { max-width: 1400px; margin: 30px auto; padding: 0 20px; }
-
-        /* 📌 CONTROLADOR DE CATEGORÍAS (TABS) */
-        .category-tabs {
-            display: flex; gap: 15px; border-bottom: 1px solid rgba(255,255,255,0.08);
-            padding-bottom: 15px; margin-bottom: 30px;
-        }
-        .tab-btn {
-            background: none; border: none; color: var(--text-muted); font-size: 14px;
-            font-weight: 800; text-transform: uppercase; letter-spacing: 1px; padding: 10px 20px;
-            cursor: pointer; transition: all 0.3s ease; position: relative;
-        }
-        .tab-btn:hover { color: #fff; }
+        .category-tabs { display: flex; gap: 15px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 15px; margin-bottom: 30px; }
+        .tab-btn { background: none; border: none; color: var(--text-muted); font-size: 14px; font-weight: 800; text-transform: uppercase; padding: 10px 20px; cursor: pointer; position: relative; }
         .tab-btn.active { color: var(--accent); }
-        .tab-btn.active::after {
-            content: ''; position: absolute; bottom: -16px; left: 0; width: 100%; height: 2px;
-            background: var(--accent); box-shadow: 0 0 10px var(--accent);
-        }
-        .tab-btn.tab-ayudable.active { color: var(--accent-purple); }
-        .tab-btn.tab-ayudable.active::after { background: var(--accent-purple); box-shadow: 0 0 10px var(--accent-purple); }
-
-        /* SECCIONES CONTENEDORAS */
+        .tab-btn.active::after { content: ''; position: absolute; bottom: -16px; left: 0; width: 100%; height: 2px; background: var(--accent); }
         .category-section { display: none; }
         .category-section.active { display: block; }
-
-        .products-grid {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-            gap: 25px;
-        }
-
-        /* TARJETAS MEJORADAS */
-        .character-card {
-            background: var(--bg-glass); border: 1px solid var(--border-glass);
-            border-radius: 16px; overflow: hidden; backdrop-filter: blur(10px);
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-            display: flex; flex-direction: column; position: relative;
-        }
-        .character-card:hover {
-            transform: translateY(-5px); border-color: rgba(255,255,255,0.25);
-        }
-
-        .character-display {
-            width: 100%; height: 200px; background: linear-gradient(180deg, rgba(10,14,26,0) 30%, rgba(6,8,12,1) 100%), #121824;
-            display: flex; align-items: center; justify-content: center; position: relative;
-        }
-        
-        .character-avatar-placeholder { font-size: 48px; font-weight: 900; opacity: 0.2; letter-spacing: 2px; }
-
+        .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 25px; }
+        .character-card { background: var(--bg-glass); border: 1px solid var(--border-glass); border-radius: 16px; overflow: hidden; display: flex; flex-direction: column; }
+        .character-display { width: 100%; height: 180px; background: #121824; display: flex; align-items: center; justify-content: center; }
+        .character-avatar-placeholder { font-size: 32px; font-weight: 900; opacity: 0.2; }
         .character-details { padding: 20px; display: flex; flex-direction: column; gap: 12px; flex-grow: 1; }
-        .character-name { font-size: 24px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.5px; }
-        .character-ability { font-size: 13px; color: var(--text-muted); line-height: 1.5; min-height: 60px; }
-
-        .price-row { display: flex; align-items: center; gap: 16px; margin-top: auto; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.06); }
-        .price-item { font-size: 14px; font-weight: 700; display: flex; align-items: center; gap: 5px; background: rgba(255,255,255,0.02); padding: 6px 12px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.04); }
+        .character-name { font-size: 22px; font-weight: 900; text-transform: uppercase; }
+        .character-ability { font-size: 13px; color: var(--text-muted); min-height: 50px; }
+        .price-row { display: flex; align-items: center; gap: 16px; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 12px; }
+        .price-item { font-size: 13px; font-weight: 700; display: flex; align-items: center; gap: 4px; }
         .price-item.gold { color: var(--accent-yellow); }
         .price-item.diamonds { color: #00bfff; }
-
         .card-actions { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 10px; margin-top: 12px; }
-        
-        .btn-buy {
-            background: #fff; border: none; color: #000; padding: 12px; border-radius: 8px;
-            font-size: 12px; font-weight: 800; text-transform: uppercase; cursor: pointer;
-            transition: all 0.2s ease; text-align: center;
-        }
-        .btn-buy:hover:not(:disabled) { background: var(--accent); transform: translateY(-1px); }
-        .btn-buy:disabled { background: #1e293b; color: #64748b; cursor: not-allowed; }
-
-        .btn-gift {
-            background: rgba(255, 255, 255, 0.04); border: 1px solid var(--border-glass);
-            color: var(--text-light); padding: 12px; border-radius: 8px;
-            font-size: 12px; font-weight: 700; text-transform: uppercase; cursor: pointer;
-            transition: all 0.2s ease; text-align: center;
-        }
-        .btn-gift:hover { border-color: #fff; }
-
-        /* 📌 MODAL DE PAGO INTEGRADO (FLUIDO Y DISEÑADO) */
-        .modal-payment {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(8px);
-            display: none; justify-content: center; align-items: center; z-index: 2000;
-        }
-        .payment-card {
-            background: #0d111a; border: 1px solid var(--border-glass);
-            width: 420px; border-radius: 16px; padding: 30px; text-align: center;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
-        }
-        .payment-title { font-size: 18px; font-weight: 900; text-transform: uppercase; margin-bottom: 8px; }
-        .payment-desc { font-size: 13px; color: var(--text-muted); margin-bottom: 24px; }
-        
+        .btn-buy { background: #fff; border: none; color: #000; padding: 12px; border-radius: 8px; font-size: 12px; font-weight: 800; text-transform: uppercase; cursor: pointer; }
+        .btn-gift { background: rgba(255, 255, 255, 0.04); border: 1px solid var(--border-glass); color: var(--text-light); padding: 12px; border-radius: 8px; font-size: 12px; font-weight: 700; text-transform: uppercase; cursor: pointer; }
+        .modal-payment { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(8px); display: none; justify-content: center; align-items: center; z-index: 2000; }
+        .payment-card { background: #0d111a; border: 1px solid var(--border-glass); width: 400px; border-radius: 16px; padding: 30px; text-align: center; }
+        .payment-title { font-size: 18px; font-weight: 900; text-transform: uppercase; margin-bottom: 12px; }
         .payment-options { display: flex; flex-direction: column; gap: 12px; }
-        .pay-option-btn {
-            background: rgba(255,255,255,0.02); border: 1px solid var(--border-glass);
-            padding: 16px; border-radius: 10px; color: #fff; font-size: 15px; font-weight: 700;
-            display: flex; justify-content: space-between; align-items: center; cursor: pointer;
-            transition: all 0.2s;
-        }
-        .pay-option-btn:hover { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.3); }
-        .pay-option-btn .currency-label { display: flex; align-items: center; gap: 8px; }
-        
-        .close-payment { margin-top: 20px; font-size: 12px; color: var(--text-muted); cursor: pointer; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; }
-        .close-payment:hover { color: #fff; }
+        .pay-option-btn { background: rgba(255,255,255,0.02); border: 1px solid var(--border-glass); padding: 16px; border-radius: 10px; color: #fff; font-size: 14px; font-weight: 700; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+        .close-payment { margin-top: 20px; font-size: 12px; color: var(--text-muted); cursor: pointer; font-weight: 700; text-transform: uppercase; }
     </style>
 </head>
 <body>
 
-    <div class="bg-glow"></div>
-
     <header class="top-navbar">
         <div class="nav-left">
+            <!-- Retorno apuntando a index.html dentro de game/ -->
             <button class="back-btn" onclick="window.location.href='index.html'">⬅ Volver</button>
-            <h1 class="store-title">ARMERÍA // <span>TIENDA</span></h1>
         </div>
+        <h1 class="store-title">ARMERÍA // <span>TIENDA</span></h1>
         <div class="nav-right">
             <div class="currency-box gold">🪙 <span id="store-gold">0</span></div>
             <div class="currency-box diamonds">💎 <span id="store-diamonds">0</span></div>
@@ -184,24 +72,18 @@
     </header>
 
     <main class="main-container">
-        
-        <!-- PESTAÑAS DE CATEGORÍAS -->
         <div class="category-tabs">
-            <button class="tab-btn active" onclick="switchCategory('usable', this)">Habilidades Usables</button>
-            <button class="tab-btn tab-ayudable" onclick="switchCategory('ayudable', this)">Habilidades Ayudables</button>
+            <button class="tab-btn active" onclick="switchCategory('usable', this)">Usables</button>
+            <button class="tab-btn" onclick="switchCategory('ayudable', this)">Ayudables</button>
         </div>
 
-        <!-- CATEGORÍA 1: USABLES -->
         <section id="cat-usable" class="category-section active">
             <div class="products-grid">
-                <!-- Tamaki -->
                 <div class="character-card">
-                    <div class="character-display">
-                        <div class="character-avatar-placeholder">TAMAKI</div>
-                    </div>
+                    <div class="character-display"><div class="character-avatar-placeholder">TAMAKI</div></div>
                     <div class="character-details">
                         <h3 class="character-name">Tamaki</h3>
-                        <p class="character-ability">Da un 10% de velocidad de movimiento por 10s. Al recibir daño, aumenta un 20% de daño al disparo a la cabeza y un 10% de velocidad de disparo. Enfriamiento: 60s.</p>
+                        <p class="character-ability">Da velocidad y daño crítico temporal en combate.</p>
                         <div class="price-row">
                             <div class="price-item gold">🪙 10,000</div>
                             <div class="price-item diamonds">💎 300</div>
@@ -215,17 +97,13 @@
             </div>
         </section>
 
-        <!-- CATEGORÍA 2: AYUDABLES -->
         <section id="cat-ayudable" class="category-section">
             <div class="products-grid">
-                <!-- Tivet -->
                 <div class="character-card">
-                    <div class="character-display">
-                        <div class="character-avatar-placeholder">TIVET</div>
-                    </div>
+                    <div class="character-display"><div class="character-avatar-placeholder">TIVET</div></div>
                     <div class="character-details">
                         <h3 class="character-name">Tivet</h3>
-                        <p class="character-ability">Otorga cada 120s un 15% de velocidad de movimiento. Al entrar en combate con menos de 50 VD, automáticamente se cura solo y recibes un escudo de 200 VD.</p>
+                        <p class="character-ability">Otorga velocidad y curación con escudo automático.</p>
                         <div class="price-row">
                             <div class="price-item gold">🪙 5,000</div>
                             <div class="price-item diamonds">💎 200</div>
@@ -236,15 +114,11 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- Gallet -->
                 <div class="character-card">
-                    <div class="character-display">
-                        <div class="character-avatar-placeholder">GALLET</div>
-                    </div>
+                    <div class="character-display"><div class="character-avatar-placeholder">GALLET</div></div>
                     <div class="character-details">
                         <h3 class="character-name">Gallet</h3>
-                        <p class="character-ability">Aumenta al máximo los puntos de escudo (máx 150). Cuando tus puntos de escudo están al mínimo, cada 60s se restablecen por completo al máximo.</p>
+                        <p class="character-ability">Maximiza los puntos de escudo del jugador.</p>
                         <div class="price-row">
                             <div class="price-item gold">🪙 5,000</div>
                             <div class="price-item diamonds">💎 200</div>
@@ -259,24 +133,14 @@
         </section>
     </main>
 
-    <!-- 📌 NUEVA VENTANA EMERGENTE INTERACTIVA DE SELECCIÓN DE PAGO -->
     <div class="modal-payment" id="paymentModal">
         <div class="payment-card">
             <div class="payment-title" id="pay-title">Método de Pago</div>
-            <div class="payment-desc">Elige la divisa que deseas utilizar para desbloquear este personaje</div>
-            
             <div class="payment-options">
-                <button class="pay-option-btn" id="pay-gold-btn">
-                    <span class="currency-label">🪙 Monedas</span>
-                    <span id="pay-gold-cost">0</span>
-                </button>
-                <button class="pay-option-btn" id="pay-diamonds-btn" style="color: #00bfff;">
-                    <span class="currency-label">💎 Diamantes</span>
-                    <span id="pay-diamonds-cost">0</span>
-                </button>
+                <button class="pay-option-btn" id="pay-gold-btn"><span>🪙 Monedas</span><span id="pay-gold-cost">0</span></button>
+                <button class="pay-option-btn" id="pay-diamonds-btn" style="color:#00bfff;"><span>💎 Diamantes</span><span id="pay-diamonds-cost">0</span></button>
             </div>
-            
-            <div class="close-payment" onclick="closePaymentFlow()">Cancelar Selección</div>
+            <div class="close-payment" onclick="closePaymentFlow()">Cancelar</div>
         </div>
     </div>
 
@@ -299,20 +163,12 @@
         const db = getFirestore(app);
         
         let currentUserDocRef = null;
-        let miNombre = "";
-        let saldoOro = 0;
-        let saldoDiamantes = 0;
-        let misPersonajes = [];
-
-        // Variables de sesión temporal de compra
+        let saldoOro = 0, saldoDiamantes = 0, miNombre = "", misPersonajes = [];
         let currentTargetItem = { nombre: "", oro: 0, diamantes: 0 };
 
-        const palabrasProhibidas = ["mierda", "puto", "puta", "hacker", "hack", "pendejo", "culiao", "marico"];
-
         onAuthStateChanged(auth, async (user) => {
-            if (!user) {
-                window.location.replace("../index.html");
-            } else {
+            if (!user) window.location.replace("../index.html");
+            else {
                 currentUserDocRef = doc(db, "usuarios", user.uid);
                 await actualizarDatosUsuario();
             }
@@ -335,15 +191,6 @@
             }
         }
 
-        // CAMBIAR CATEGORÍAS (TABS)
-        window.switchCategory = function(categoria, btn) {
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-
-            document.querySelectorAll('.category-section').forEach(s => s.classList.remove('active'));
-            document.getElementById(`cat-${categoria}`).classList.add('active');
-        };
-
         function verifyOwnedCharacters() {
             ["Tamaki", "Tivet", "Gallet"].forEach(pj => {
                 const btn = document.getElementById(`btn-buy-${pj}`);
@@ -351,144 +198,75 @@
                     if (misPersonajes.includes(pj)) {
                         btn.textContent = "Ya lo tienes";
                         btn.disabled = true;
+                        btn.style.background = "#1e293b";
+                        btn.style.color = "#64748b";
                     } else {
                         btn.textContent = "Obtener";
                         btn.disabled = false;
+                        btn.style.background = "#fff";
+                        btn.style.color = "#000";
                     }
                 }
             });
         }
 
-        // 📌 FLUJO INTERACTIVO DE PAGO
+        window.switchCategory = function(categoria, btn) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            document.querySelectorAll('.category-section').forEach(s => s.classList.remove('active'));
+            document.getElementById(`cat-${categoria}`).classList.add('active');
+        };
+
         window.openPaymentFlow = function(nombre, costoOro, costoDiamantes) {
             if (misPersonajes.includes(nombre)) return;
-
-            // Guardar datos temporalmente
             currentTargetItem = { nombre, oro: costoOro, diamantes: costoDiamantes };
-
             document.getElementById("pay-title").textContent = `Desbloquear ${nombre}`;
             document.getElementById("pay-gold-cost").textContent = costoOro.toLocaleString();
             document.getElementById("pay-diamonds-cost").textContent = costoDiamantes;
-
-            // Configurar triggers de los botones del modal
             document.getElementById("pay-gold-btn").onclick = () => executePurchase('oro');
             document.getElementById("pay-diamonds-btn").onclick = () => executePurchase('diamantes');
-
             document.getElementById("paymentModal").style.display = "flex";
         };
 
-        window.closePaymentFlow = function() {
-            document.getElementById("paymentModal").style.display = "none";
-        };
+        window.closePaymentFlow = () => { document.getElementById("paymentModal").style.display = "none"; };
 
-        // COMPRAR TRAS SELECCIONAR DIVISA
         async function executePurchase(metodo) {
             closePaymentFlow();
             const { nombre, oro, diamantes } = currentTargetItem;
-
             if (metodo === 'oro') {
-                if (saldoOro < oro) {
-                    alert("Monedas insuficientes para esta transacción.");
-                    return;
-                }
-                if (confirm(`¿Deseas pagar ${nombre} usando 🪙 ${oro.toLocaleString()} monedas?`)) {
-                    saldoOro -= oro;
-                    await updateDoc(currentUserDocRef, { oro: saldoOro, personajes: arrayUnion(nombre) });
-                    alert(`¡${nombre} desbloqueado exitosamente!`);
-                }
-            } else if (metodo === 'diamantes') {
-                if (saldoDiamantes < diamantes) {
-                    alert("Diamantes insuficientes para esta transacción.");
-                    return;
-                }
-                if (confirm(`¿Deseas pagar ${nombre} usando 💎 ${diamantes} diamantes?`)) {
-                    saldoDiamantes -= diamantes;
-                    await updateDoc(currentUserDocRef, { diamantes: saldoDiamantes, personajes: arrayUnion(nombre) });
-                    alert(`¡${nombre} desbloqueado exitosamente!`);
-                }
+                if (saldoOro < oro) return alert("Monedas insuficientes.");
+                saldoOro -= oro;
+                await updateDoc(currentUserDocRef, { oro: saldoOro, personajes: arrayUnion(nombre) });
+            } else {
+                if (saldoDiamantes < diamantes) return alert("Diamantes insuficientes.");
+                saldoDiamantes -= diamantes;
+                await updateDoc(currentUserDocRef, { diamantes: saldoDiamantes, personajes: arrayUnion(nombre) });
             }
+            alert(`¡${nombre} desbloqueado!`);
             await actualizarDatosUsuario();
         }
 
-        // 🎁 REGALAR (PREGUNTA SI PAGA CON MONEDAS O DIAMANTES DE MANERA INTERACTIVA)
-        window.giftCharacter = async function(nombrePersonaje, costoOro, costoDiamantes) {
-            if (!currentUserDocRef) return;
-
-            const targetId = prompt("Introduce el ID del jugador al que deseas regalarle:");
-            if (!targetId || targetId.trim() === "") return;
-
+        window.giftCharacter = async function(nombre, costoOro, costoDiamantes) {
+            const targetId = prompt("Introduce el ID del jugador:");
+            if (!targetId) return;
             const q = query(collection(db, "usuarios"), where("gameId", "==", targetId.trim()));
-            const querySnapshot = await getDocs(q);
-
-            if (querySnapshot.empty) {
-                alert("El ID introducido no corresponde a ningún jugador registrado.");
-                return;
-            }
-
-            const amigoDoc = querySnapshot.docs[0];
-            const amigoUid = amigoDoc.id;
-            const amigoNombre = amigoDoc.data().username;
-
-            // Selección de moneda para regalar mediante flujo diseñado rápido en prompt
-            const eleccionDivisa = prompt(`¿Con qué divisa deseas pagar el regalo para ${amigoNombre}?\n\nEscribe "1" para Monedas (🪙 ${costoOro.toLocaleString()})\nEscribe "2" para Diamantes (💎 ${costoDiamantes})`);
+            const snap = await getDocs(q);
+            if (snap.empty) return alert("ID no encontrado.");
+            const amigoDoc = snap.docs[0];
+            const divisa = prompt(`Pagar con:\n1. Monedas\n2. Diamantes`);
             
-            let divisaElegida = "";
-            if (eleccionDivisa === "1") divisaElegida = "oro";
-            else if (eleccionDivisa === "2") divisaElegida = "diamantes";
-            else {
-                alert("Selección cancelada o inválida.");
-                return;
-            }
+            let costo = divisa === "1" ? costoOro : costoDiamantes;
+            if (divisa === "1" && saldoOro < costo) return alert("Saldo insuficiente.");
+            if (divisa === "2" && saldoDiamantes < costo) return alert("Saldo insuficiente.");
 
-            // Validar saldo correspondiente
-            if (divisaElegida === "oro" && saldoOro < costoOro) {
-                alert("Monedas insuficientes.");
-                return;
-            }
-            if (divisaElegida === "diamantes" && saldoDiamantes < costoDiamantes) {
-                alert("Diamantes insuficientes.");
-                return;
-            }
+            if (divisa === "1") { saldoOro -= costoOro; await updateDoc(currentUserDocRef, { oro: saldoOro }); }
+            else { saldoDiamantes -= costoDiamantes; await updateDoc(currentUserDocRef, { diamantes: saldoDiamantes }); }
 
-            // Confirmación exacta requerida
-            const confirmacion = confirm(`¿Quieres regalarle a este jugador?\n\nID: ${targetId}\nNombre: ${amigoNombre}`);
-            if (!confirmacion) return;
-
-            let mensajeRegalo = prompt("Escribe un mensaje para tu regalo:");
-            if (!mensajeRegalo || mensajeRegalo.trim() === "") {
-                mensajeRegalo = "¡Disfruta mi regalo!";
-            } else {
-                const contieneInsulto = palabrasProhibidas.some(palabra => mensajeRegalo.toLowerCase().includes(palabra));
-                if (contieneInsulto) mensajeRegalo = "¡Disfruta mi regalo!";
-            }
-
-            try {
-                // Descontar la divisa elegida
-                if (divisaElegida === "oro") {
-                    saldoOro -= costoOro;
-                    await updateDoc(currentUserDocRef, { oro: saldoOro });
-                } else {
-                    saldoDiamantes -= costoDiamantes;
-                    await updateDoc(currentUserDocRef, { diamantes: saldoDiamantes });
-                }
-
-                // Depositar regalo en el inbox del amigo
-                const buzonRef = collection(db, "usuarios", amigoUid, "buzon");
-                await addDoc(buzonRef, {
-                    remitenteNombre: miNombre,
-                    tipo: "personaje",
-                    item: nombrePersonaje,
-                    mensaje: mensajeRegalo,
-                    fecha: new Date().toISOString(),
-                    reclamado: false
-                });
-
-                alert(`¡Regalo enviado con éxito a ${amigoNombre}!`);
-                await actualizarDatosUsuario();
-
-            } catch (err) {
-                console.error("Error al enviar regalo:", err);
-            }
+            await addDoc(collection(db, "usuarios", amigoDoc.id, "buzon"), {
+                remitenteNombre: miNombre, tipo: "personaje", item: nombre, mensaje: "¡Un regalo para ti!", fecha: new Date().toISOString(), reclamado: false
+            });
+            alert("¡Regalo enviado!");
+            await actualizarDatosUsuario();
         };
     </script>
 </body>
