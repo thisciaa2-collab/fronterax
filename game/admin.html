@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Frontera | Panel de Administración</title>
+    <style>
+        /* --- ESTILOS GLOBALES --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: #050507; color: #ffffff; height: 100vh; overflow: hidden; display: flex; }
+
+        /* --- PANTALLA DE LOGIN --- */
+        #login-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at center, #0a0a10 0%, #000000 100%);
+            display: flex; justify-content: center; align-items: center; z-index: 9999;
+        }
+        .login-box {
+            background: #101216; padding: 40px; border-radius: 12px; width: 350px;
+            border: 1px solid #00ffaa; box-shadow: 0 0 30px rgba(0, 255, 170, 0.1);
+            text-align: center;
+        }
+        .login-box h2 { color: #00ffaa; margin-bottom: 25px; letter-spacing: 2px; }
+        .input-group { margin-bottom: 20px; text-align: left; }
+        .input-group label { display: block; font-size: 12px; color: #aaa; margin-bottom: 5px; text-transform: uppercase; }
+        .input-group input {
+            width: 100%; padding: 12px; background: #050507; border: 1px solid #333;
+            color: #fff; border-radius: 6px; outline: none; transition: border 0.3s;
+        }
+        .input-group input:focus { border-color: #00ffaa; }
+        .btn-submit {
+            width: 100%; padding: 15px; background: #00ffaa; color: #000; font-weight: bold;
+            border: none; border-radius: 6px; cursor: pointer; text-transform: uppercase; transition: 0.3s;
+        }
+        .btn-submit:hover { background: #00cc88; box-shadow: 0 0 15px rgba(0, 255, 170, 0.4); }
+        .error-msg { color: #ff3366; font-size: 13px; margin-top: 15px; display: none; }
+
+        /* --- ESTRUCTURA DEL DASHBOARD --- */
+        #dashboard { display: none; width: 100%; height: 100%; }
+        
+        /* SIDEBAR */
+        .sidebar {
+            width: 250px; background: #0b0c10; border-right: 1px solid #1f2029;
+            padding: 20px 0; display: flex; flex-direction: column;
+        }
+        .brand { text-align: center; font-size: 24px; font-weight: 900; color: #00ffaa; letter-spacing: 3px; margin-bottom: 40px; }
+        .nav-item {
+            padding: 15px 25px; color: #888; font-size: 15px; font-weight: bold;
+            cursor: pointer; transition: 0.3s; border-left: 3px solid transparent;
+        }
+        .nav-item:hover, .nav-item.active {
+            background: rgba(0, 255, 170, 0.05); color: #fff; border-left-color: #00ffaa;
+        }
+
+        /* CONTENIDO PRINCIPAL */
+        .main-content { flex: 1; padding: 30px; overflow-y: auto; background: #070709; }
+        .header-title { font-size: 28px; font-weight: bold; margin-bottom: 30px; border-bottom: 1px solid #1f2029; padding-bottom: 15px; }
+
+        /* PANELES DE SECCIONES */
+        .section-panel { display: none; animation: fadeIn 0.4s ease; }
+        .section-panel.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* TARJETAS DE HERRAMIENTAS */
+        .grid-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 20px; }
+        .admin-card { background: #101216; border: 1px solid #1f2029; border-radius: 10px; padding: 25px; }
+        .admin-card h3 { color: #00ffaa; margin-bottom: 20px; font-size: 18px; border-bottom: 1px dashed #333; padding-bottom: 10px; }
+        
+        /* FORMULARIOS INTERNOS */
+        .form-row { display: flex; gap: 15px; margin-bottom: 15px; }
+        .form-control { flex: 1; }
+        .form-control label { display: block; font-size: 11px; color: #888; margin-bottom: 5px; text-transform: uppercase; }
+        .form-control input, .form-control select, .form-control textarea {
+            width: 100%; padding: 10px; background: #050507; border: 1px solid #222;
+            color: #fff; border-radius: 5px; outline: none;
+        }
+        .form-control input:focus, .form-control select:focus, .form-control textarea:focus { border-color: #00ffaa; }
+        .btn-action {
+            background: #2a2d35; color: #fff; border: 1px solid #444; padding: 12px 20px;
+            border-radius: 5px; cursor: pointer; font-weight: bold; transition: 0.2s; width: 100%; margin-top: 10px;
+        }
+        .btn-action:hover { background: #00ffaa; color: #000; border-color: #00ffaa; }
+        .btn-action.gold { background: #ffaa00; border-color: #ffaa00; color: #000; }
+        .btn-action.gold:hover { background: #ffcc00; }
+
+        /* NOTIFICACIONES */
+        #toast {
+            position: fixed; bottom: 30px; right: 30px; background: #00ffaa; color: #000;
+            padding: 15px 25px; border-radius: 5px; font-weight: bold; box-shadow: 0 4px 15px rgba(0,255,170,0.3);
+            transform: translateX(150%); transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55); z-index: 1000;
+        }
+        #toast.show { transform: translateX(0); }
+    </style>
+</head>
+<body>
+
+    <!-- OVERLAY DE LOGIN -->
+    <div id="login-overlay">
+        <div class="login-box">
+            <h2>PANEL ADMIN</h2>
+            <div class="input-group">
+                <label>Usuario</label>
+                <input type="text" id="login-user" placeholder="Nombre de usuario" autocomplete="off">
+            </div>
+            <div class="input-group">
+                <label>Contraseña</label>
+                <input type="password" id="login-pass" placeholder="••••••••">
+            </div>
+            <button class="btn-submit" onclick="verificarLogin()">Ingresar</button>
+            <div class="error-msg" id="login-error">Credenciales incorrectas.</div>
+        </div>
+    </div>
+
+    <!-- DASHBOARD PRINCIPAL -->
+    <div id="dashboard">
+        <!-- BARRA LATERAL -->
+        <div class="sidebar">
+            <div class="brand">FRONTERA</div>
+            <div class="nav-item active" onclick="switchTab('tab-economia', this)">💰 Economía & Pjs</div>
+            <div class="nav-item" onclick="switchTab('tab-inbox', this)">📬 Sistema Inbox</div>
+            <div class="nav-item" onclick="switchTab('tab-pase', this)">🎫 Pase Front</div>
+            <div class="nav-item" onclick="switchTab('tab-eventos', this)">🎯 Eventos & Misiones</div>
+            <div class="nav-item" style="margin-top: auto; color: #ff3366;" onclick="cerrarSesion()">Cerrar Sesión</div>
+        </div>
+
+        <!-- CONTENIDO -->
+        <div class="main-content">
+            
+            <!-- SECCIÓN: ECONOMÍA Y PERSONAJES -->
+            <div id="tab-economia" class="section-panel active">
+                <div class="header-title">Economía y Personajes</div>
+                <div class="grid-container">
+                    
+                    <!-- Enviar Monedas/Diamantes -->
+                    <div class="admin-card">
+                        <h3>Añadir Recursos (Por ID)</h3>
+                        <div class="form-control" style="margin-bottom: 15px;">
+                            <label>ID del Jugador</label>
+                            <input type="text" id="eco-id" placeholder="Ej. 106524103">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-control">
+                                <label>Diamantes 💎</label>
+                                <input type="number" id="eco-diamantes" value="0">
+                            </div>
+                            <div class="form-control">
+                                <label>Monedas 🪙</label>
+                                <input type="number" id="eco-monedas" value="0">
+                            </div>
+                        </div>
+                        <button class="btn-action" onclick="ejecutarAccion('Recursos inyectados correctamente al ID: ' + document.getElementById('eco-id').value)">Enviar Recursos</button>
+                    </div>
+
+                    <!-- Otorgar Personaje -->
+                    <div class="admin-card">
+                        <h3>Desbloquear Personaje (Por ID)</h3>
+                        <div class="form-control" style="margin-bottom: 15px;">
+                            <label>ID del Jugador</label>
+                            <input type="text" id="char-id" placeholder="Ej. 106524103">
+                        </div>
+                        <div class="form-control" style="margin-bottom: 15px;">
+                            <label>Seleccionar Personaje</label>
+                            <select id="char-select">
+                                <option>Alok (Habilidad Activa)</option>
+                                <option>Kelly (Renacida)</option>
+                                <option>Chrono</option>
+                                <option>Kla</option>
+                            </select>
+                        </div>
+                        <button class="btn-action gold" onclick="ejecutarAccion('Personaje otorgado exitosamente al ID: ' + document.getElementById('char-id').value)">Dar Personaje Gratis</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECCIÓN: INBOX -->
+            <div id="tab-inbox" class="section-panel">
+                <div class="header-title">Gestión de Inbox (Mensajería)</div>
+                <div class="admin-card" style="max-width: 700px;">
+                    <h3>Enviar Correo con Recompensas</h3>
+                    <div class="form-row">
+                        <div class="form-control">
+                            <label>Tipo de Destinatario</label>
+                            <select id="inbox-target" onchange="toggleInboxTarget()">
+                                <option value="global">Todos los Servidores (Global)</option>
+                                <option value="id">Jugador Específico (ID)</option>
+                                <option value="grupo">Grupo / Escuadra</option>
+                            </select>
+                        </div>
+                        <div class="form-control" id="inbox-target-input-container" style="display:none;">
+                            <label>Valor (ID o Nombre del Grupo)</label>
+                            <input type="text" id="inbox-target-input" placeholder="Escribe el ID o Grupo...">
+                        </div>
+                    </div>
+                    <div class="form-control" style="margin-bottom: 15px;">
+                        <label>Asunto del Mensaje</label>
+                        <input type="text" id="inbox-title" placeholder="Ej. ¡Recompensa por Mantenimiento!">
+                    </div>
+                    <div class="form-control" style="margin-bottom: 15px;">
+                        <label>Cuerpo del Mensaje</label>
+                        <textarea id="inbox-body" rows="3" placeholder="Gracias por su paciencia. Aquí tienen una recompensa..."></textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-control">
+                            <label>Objeto a Enviar</label>
+                            <select id="inbox-reward-type">
+                                <option>Diamantes 💎</option>
+                                <option>Monedas 🪙</option>
+                                <option>Tarjeta de Sala Custom</option>
+                                <option>Caja de Armas</option>
+                            </select>
+                        </div>
+                        <div class="form-control">
+                            <label>Cantidad</label>
+                            <input type="number" id="inbox-reward-amount" value="1">
+                        </div>
+                    </div>
+                    <button class="btn-action" onclick="ejecutarAccion('Mensaje enviado al Inbox configurado')">Enviar Mensaje</button>
+                </div>
+            </div>
+
+            <!-- SECCIÓN: PASE FRONT -->
+            <div id="tab-pase" class="section-panel">
+                <div class="header-title">Ajustes del Pase Front</div>
+                <div class="admin-card" style="max-width: 700px;">
+                    <h3>Configurar Temporada Actual</h3>
+                    <div class="form-control" style="margin-bottom: 15px;">
+                        <label>Nombre del Pase Front</label>
+                        <input type="text" id="pase-name" value="Temporada 1: Sombras del Desierto">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-control">
+                            <label>Niveles Totales</label>
+                            <input type="number" id="pase-levels" value="50">
+                        </div>
+                        <div class="form-control">
+                            <label>Costo del Pase (Diamantes)</label>
+                            <input type="number" id="pase-price" value="600">
+                        </div>
+                    </div>
+                    <div class="form-control" style="margin-bottom: 15px;">
+                        <label>URL de la Foto / Banner (Opcional)</label>
+                        <input type="text" id="pase-photo" placeholder="https://tuservidor.com/img/banner-pase.png">
+                    </div>
+                    <button class="btn-action gold" onclick="ejecutarAccion('Los datos del Pase Front han sido actualizados globalmente')">Guardar Cambios del Pase</button>
+                </div>
+            </div>
+
+            <!-- SECCIÓN: EVENTOS Y MISIONES -->
+            <div id="tab-eventos" class="section-panel">
+                <div class="header-title">Panel de Eventos y Misiones</div>
+                <div class="admin-card" style="max-width: 700px;">
+                    <h3>Registrar Nueva Misión</h3>
+                    <div class="form-row">
+                        <div class="form-control">
+                            <label>Tipo de Evento</label>
+                            <select id="mission-type">
+                                <option>Misiones Diarias</option>
+                                <option>Evento de Recarga</option>
+                                <option>Evento Especial (Web)</option>
+                            </select>
+                        </div>
+                        <div class="form-control">
+                            <label>Aplicar a</label>
+                            <select id="mission-target">
+                                <option>Todos los Jugadores (Global)</option>
+                                <option>Cuenta Específica (Por ID)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-control" style="margin-bottom: 15px;">
+                        <label>Descripción del Objetivo</label>
+                        <input type="text" id="mission-desc" placeholder="Ej. Haz BOOYAH! 3 veces en Clasificatoria">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-control">
+                            <label>Recompensa Ofrecida</label>
+                            <input type="text" id="mission-reward" placeholder="Ej. 1000 Monedas">
+                        </div>
+                        <div class="form-control">
+                            <label>Meta de Progreso</label>
+                            <input type="number" id="mission-goal" value="3">
+                        </div>
+                    </div>
+                    <button class="btn-action" onclick="ejecutarAccion('Misión activada en los servidores de juego')">Activar Misión</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- TOAST DE NOTIFICACIÓN -->
+    <div id="toast">Acción completada.</div>
+
+    <!-- LÓGICA DE JAVASCRIPT Y FIREBASE INTEGRATION (BASE) -->
+    <script type="module">
+        // IMPORTACIONES DE FIREBASE (LISTAS PARA USAR)
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, doc, updateDoc, setDoc, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // CONFIGURACIÓN (Deberás rellenar esto con tus datos en tu entorno)
+        const firebaseConfig = {
+        apiKey: "AIzaSyDeUPVDX40AFX-W_crtUWm0TsXS2smx1zo",
+        authDomain: "frontera-game.firebaseapp.com",
+        projectId: "frontera-game",
+        storageBucket: "frontera-game.firebasestorage.app",
+        messagingSenderId: "728596699203",
+        appId: "1:728596699203:web:a199829078de6a2ef95cf6"
+        };
+
+        // INICIALIZACIÓN (Comentada para que no tire error hasta que pongas tus credenciales)
+        // const app = initializeApp(firebaseConfig);
+        // const db = getFirestore(app);
+
+        // 1. SISTEMA DE LOGIN (QUEMADO EN EL FRONTEND COMO PEDISTE)
+        window.verificarLogin = function() {
+            const user = document.getElementById('login-user').value;
+            const pass = document.getElementById('login-pass').value;
+            const errorMsg = document.getElementById('login-error');
+
+            if (user === "cris" && pass === "tobita1037") {
+                document.getElementById('login-overlay').style.display = 'none';
+                document.getElementById('dashboard').style.display = 'flex';
+            } else {
+                errorMsg.style.display = 'block';
+                setTimeout(() => { errorMsg.style.display = 'none'; }, 3000);
+            }
+        };
+
+        document.getElementById('login-pass').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') window.verificarLogin();
+        });
+
+        // CERRAR SESIÓN
+        window.cerrarSesion = function() {
+            document.getElementById('login-user').value = '';
+            document.getElementById('login-pass').value = '';
+            document.getElementById('dashboard').style.display = 'none';
+            document.getElementById('login-overlay').style.display = 'flex';
+        };
+
+        // 2. NAVEGACIÓN ENTRE PESTAÑAS
+        window.switchTab = function(tabId, element) {
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            element.classList.add('active');
+            document.querySelectorAll('.section-panel').forEach(panel => panel.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+        };
+
+        // 3. UI DINÁMICA DEL INBOX
+        window.toggleInboxTarget = function() {
+            const select = document.getElementById('inbox-target');
+            const inputContainer = document.getElementById('inbox-target-input-container');
+            
+            if (select.value === 'id' || select.value === 'grupo') {
+                inputContainer.style.display = 'block';
+            } else {
+                inputContainer.style.display = 'none';
+            }
+        };
+
+        // 4. SIMULADOR DE ACCIONES CON TOAST NOTIFICATIONS (INTEGRABLE CON FIRESTORE)
+        window.ejecutarAccion = function(mensaje) {
+            /* 
+               AQUÍ VA TU LÓGICA DE FIRESTORE. POR EJEMPLO:
+               const targetID = document.getElementById('eco-id').value;
+               const diamantes = parseInt(document.getElementById('eco-diamantes').value);
+               const userRef = doc(db, "users", targetID);
+               updateDoc(userRef, { diamonds: increment(diamantes) });
+            */
+            mostrarToast(mensaje);
+        };
+
+        window.mostrarToast = function(mensaje) {
+            const toast = document.getElementById('toast');
+            toast.innerText = mensaje;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        };
+    </script>
+</body>
+</html>
