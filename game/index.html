@@ -83,7 +83,6 @@
     <div class="profile-container dark-box">
         <div class="level-box">1</div>
         <div class="profile-info">
-            <!-- Estos campos se llenarán solos con Firebase -->
             <span class="profile-name" id="user-name">CARGANDO...</span>
             <span class="profile-id" id="user-id">ID: ------</span>
         </div>
@@ -125,53 +124,43 @@
 
     <!-- FIREBASE Y LÓGICA DEL JUEGO -->
     <script type="module">
-        // 1. IMPORTAR FIREBASE
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         
-        // ⚠️ IMPORTANTE: REEMPLAZA ESTO CON TUS DATOS DE FIREBASE ⚠️
+        // ⚠️ IMPORTANTE: REEMPLAZA ESTO CON LOS DATOS REALES QUE TIENES EN TU INDEX.HTML PRINCIPAL ⚠️
         const firebaseConfig = {
-            apiKey: "TU_API_KEY",
-            authDomain: "TU_PROYECTO.firebaseapp.com",
-            projectId: "TU_PROYECTO",
-            storageBucket: "TU_PROYECTO.appspot.com",
-            messagingSenderId: "TU_SENDER_ID",
-            appId: "TU_APP_ID"
+        apiKey: "AIzaSyDeUPVDX40AFX-W_crtUWm0TsXS2smx1zo",
+        authDomain: "frontera-game.firebaseapp.com",
+        projectId: "frontera-game",
+        storageBucket: "frontera-game.firebasestorage.app",
+        messagingSenderId: "728596699203",
+        appId: "1:728596699203:web:a199829078de6a2ef95cf6"
         };
 
-        // INICIALIZAR FIREBASE
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
 
-        // 2. DETECTAR USUARIO LOGUEADO Y ACTUALIZAR UI
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                // Sincronizar el Nombre (Si no tiene displayName, usa el inicio de su email)
                 const displayName = user.displayName || user.email.split('@')[0];
                 document.getElementById('user-name').innerText = displayName;
 
-                // Generar un "ID de jugador" numérico falso pero único usando su UID de Firebase
-                // Extraemos solo los números de su UID y agarramos los primeros 8
                 let numericId = user.uid.replace(/\D/g, '').substring(0, 8);
                 if (numericId.length < 5) {
-                    // Si su UID casi no tiene números, le damos uno aleatorio fijo
                     numericId = Math.floor(Math.random() * 90000000) + 10000000;
                 }
                 document.getElementById('user-id').innerText = `ID: ${numericId}`;
 
             } else {
-                // Si alguien entra aquí y no está logueado, lo mandamos al index.html principal (Inicio/Login)
-                window.location.href = "../index.html"; 
+                // Si no hay usuario o las credenciales de arriba fallan, expulsa a la raíz de forma segura.
+                window.location.replace("/"); 
             }
         });
 
-        // 3. LÓGICA DEL BOTÓN START (10 SEGUNDOS)
         const btnStart = document.getElementById("btn-start");
 
         btnStart.addEventListener("click", () => {
             let timer = 10;
-            
-            // Congelar el botón visualmente
             btnStart.disabled = true;
             
             const countdown = setInterval(() => {
@@ -181,8 +170,6 @@
                 if (timer < 0) {
                     clearInterval(countdown);
                     btnStart.innerText = "CARGANDO...";
-                    
-                    // Redirección directa al mapa con los bots dentro de la misma carpeta /game
                     window.location.href = "match.html?id=10960960";
                 }
             }, 1000);
