@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Lobby Principal</title>
+    <title>Frontera | Lobby Principal</title>
     <style>
-        /* RESET Y FUENTE */
+        /* --- RESET Y FUENTE --- */
         * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; font-family: 'Arial', sans-serif; }
         body { background-color: #070709; color: #ffffff; height: 100vh; overflow: hidden; position: relative; }
 
-        /* UTILIDADES DE CAJAS OSCURAS */
+        /* --- UTILIDADES DE CAJAS OSCURAS --- */
         .dark-box { background: rgba(20, 20, 25, 0.8); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 8px; }
 
         /* --- ARRIBA IZQUIERDA: PERFIL --- */
@@ -79,22 +79,23 @@
 </head>
 <body>
 
-    <!-- PERFIL -->
+    <!-- PERFIL DINÁMICO -->
     <div class="profile-container dark-box">
         <div class="level-box">1</div>
         <div class="profile-info">
-            <span class="profile-name">11S</span>
-            <span class="profile-id">ID: 106524103</span>
+            <!-- Estos campos se llenarán solos con Firebase -->
+            <span class="profile-name" id="user-name">CARGANDO...</span>
+            <span class="profile-id" id="user-id">ID: ------</span>
         </div>
     </div>
 
     <!-- MONEDAS -->
     <div class="currency-container">
         <div class="currency-pill">
-            <span>🪙</span> <span class="text-gold">262.225</span>
+            <span>🪙</span> <span class="text-gold" id="user-coins">0</span>
         </div>
         <div class="currency-pill">
-            <span>💎</span> <span class="text-diamond">36</span>
+            <span>💎</span> <span class="text-diamond">0</span>
         </div>
     </div>
 
@@ -122,8 +123,49 @@
         <button id="btn-start" class="btn-start">START</button>
     </div>
 
-    <!-- LÓGICA DEL JUEGO -->
-    <script>
+    <!-- FIREBASE Y LÓGICA DEL JUEGO -->
+    <script type="module">
+        // 1. IMPORTAR FIREBASE
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        
+        // ⚠️ IMPORTANTE: REEMPLAZA ESTO CON TUS DATOS DE FIREBASE ⚠️
+        const firebaseConfig = {
+            apiKey: "TU_API_KEY",
+            authDomain: "TU_PROYECTO.firebaseapp.com",
+            projectId: "TU_PROYECTO",
+            storageBucket: "TU_PROYECTO.appspot.com",
+            messagingSenderId: "TU_SENDER_ID",
+            appId: "TU_APP_ID"
+        };
+
+        // INICIALIZAR FIREBASE
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        // 2. DETECTAR USUARIO LOGUEADO Y ACTUALIZAR UI
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // Sincronizar el Nombre (Si no tiene displayName, usa el inicio de su email)
+                const displayName = user.displayName || user.email.split('@')[0];
+                document.getElementById('user-name').innerText = displayName;
+
+                // Generar un "ID de jugador" numérico falso pero único usando su UID de Firebase
+                // Extraemos solo los números de su UID y agarramos los primeros 8
+                let numericId = user.uid.replace(/\D/g, '').substring(0, 8);
+                if (numericId.length < 5) {
+                    // Si su UID casi no tiene números, le damos uno aleatorio fijo
+                    numericId = Math.floor(Math.random() * 90000000) + 10000000;
+                }
+                document.getElementById('user-id').innerText = `ID: ${numericId}`;
+
+            } else {
+                // Si alguien entra aquí y no está logueado, lo mandas pa' fuera (login)
+                window.location.href = "../login.html"; 
+            }
+        });
+
+        // 3. LÓGICA DEL BOTÓN START (10 SEGUNDOS)
         const btnStart = document.getElementById("btn-start");
 
         btnStart.addEventListener("click", () => {
@@ -140,7 +182,7 @@
                     clearInterval(countdown);
                     btnStart.innerText = "CARGANDO...";
                     
-                    // Redirección directa a tu archivo match.html
+                    // Redirección directa al mapa con los bots
                     window.location.href = "match.html?id=10960960";
                 }
             }, 1000);
