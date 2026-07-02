@@ -3,348 +3,148 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Frontera-X | Lobby Oficial</title>
-    <!-- Favicon saliendo a la raíz -->
-    <link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght=400;600;700;900&family=JetBrains+Mono:wght=700&display=swap" rel="stylesheet">
-    
+    <title>Lobby Principal</title>
     <style>
-        :root {
-            --bg-dark: #05070b;
-            --bg-glass: rgba(10, 14, 26, 0.85);
-            --border-glass: rgba(255, 255, 255, 0.08);
-            --accent: #00ffcc;
-            --accent-purple: #9d4edd;
-            --accent-yellow: #ffcc00;
-            --text-light: #ffffff;
-            --text-muted: #94a3b8;
-        }
+        /* RESET Y FUENTE */
+        * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; font-family: 'Arial', sans-serif; }
+        body { background-color: #070709; color: #ffffff; height: 100vh; overflow: hidden; position: relative; }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+        /* UTILIDADES DE CAJAS OSCURAS */
+        .dark-box { background: rgba(20, 20, 25, 0.8); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 8px; }
 
-        body { 
-            background-color: var(--bg-dark); 
-            font-family: 'Inter', sans-serif; 
-            color: var(--text-light);
-            min-height: 100vh;
-            overflow: hidden;
-            position: relative;
+        /* --- ARRIBA IZQUIERDA: PERFIL --- */
+        .profile-container {
+            position: absolute; top: 20px; left: 20px;
+            display: flex; align-items: center; padding: 5px 15px 5px 5px; gap: 10px;
         }
+        .level-box {
+            background-color: #00ffaa; color: #000; font-size: 20px; font-weight: 900;
+            width: 40px; height: 40px; display: flex; justify-content: center; align-items: center; border-radius: 4px;
+        }
+        .profile-info { display: flex; flex-direction: column; }
+        .profile-name { font-size: 18px; font-weight: 900; text-transform: uppercase; }
+        .profile-id { font-size: 11px; color: #00ffaa; font-weight: bold; letter-spacing: 1px; }
 
-        /* HUD original */
-        .lobby-ui {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            padding: 25px 40px; display: flex; flex-direction: column;
-            justify-content: space-between; z-index: 10; pointer-events: none;
-        }
-        .lobby-ui * { pointer-events: auto; }
-
-        .top-section { display: flex; justify-content: space-between; align-items: flex-start; }
-        
-        .player-profile-box {
-            background: rgba(6, 9, 16, 0.6); border: 1px solid var(--border-glass);
-            border-radius: 12px; padding: 12px 20px 12px 65px; position: relative; min-width: 180px;
-        }
-        .player-level {
-            position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
-            width: 40px; height: 40px; background: #00ffcc; border-radius: 8px;
-            color: #000; font-weight: 900; display: flex; align-items: center; justify-content: center; font-size: 18px;
-        }
-        .player-name { font-size: 15px; font-weight: 900; color: #fff; letter-spacing: 0.5px; }
-        .player-id { font-size: 11px; color: #00ffcc; font-family: 'JetBrains Mono', monospace; margin-top: 2px; }
-
-        .currencies-container { display: flex; gap: 15px; }
+        /* --- ARRIBA DERECHA: MONEDAS --- */
+        .currency-container { position: absolute; top: 20px; right: 20px; display: flex; gap: 10px; }
         .currency-pill {
-            background: rgba(6, 9, 16, 0.7); border: 1px solid var(--border-glass);
-            padding: 8px 16px; border-radius: 20px; font-weight: 700; font-size: 13px;
-            display: flex; align-items: center; gap: 6px;
+            display: flex; align-items: center; padding: 5px 15px; border-radius: 20px; gap: 8px;
+            font-size: 14px; font-weight: 900; background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.1);
         }
-        .currency-pill.gold span { color: var(--accent-yellow); }
-        .currency-pill.diamonds span { color: #00bfff; }
+        .text-gold { color: #ffdd00; }
+        .text-diamond { color: #00ddff; }
 
-        .middle-section { display: flex; align-items: center; flex-grow: 1; }
-        .left-menu { display: flex; flex-direction: column; gap: 12px; width: 180px; }
-        
-        .btn-menu-left {
-            background: rgba(10, 14, 26, 0.5); border: 1px solid var(--border-glass);
-            color: #fff; font-size: 12px; font-weight: 800; text-transform: uppercase;
-            padding: 14px 20px; border-radius: 8px; text-align: left; cursor: pointer;
-            transition: all 0.2s; letter-spacing: 1px;
+        /* --- MENÚ LATERAL IZQUIERDO --- */
+        .left-menu {
+            position: absolute; top: 50%; left: 20px; transform: translateY(-50%);
+            display: flex; flex-direction: column; gap: 15px;
         }
-        .btn-menu-left:hover { border-color: #fff; background: rgba(255,255,255,0.04); transform: translateX(4px); }
+        .side-btn {
+            display: flex; align-items: center; padding: 12px 20px; gap: 10px; width: 180px;
+            font-size: 14px; font-weight: 900; color: #fff; cursor: pointer; text-transform: uppercase;
+        }
+        .side-btn:hover { background: rgba(255,255,255,0.1); }
 
-        .bottom-section { display: flex; justify-content: space-between; align-items: flex-end; }
-        
-        .bottom-left-group { display: flex; gap: 10px; background: rgba(6, 9, 16, 0.5); padding: 8px; border-radius: 10px; border: 1px solid var(--border-glass); }
-        .btn-bottom-mini {
-            background: transparent; border: none; color: var(--text-muted); font-size: 11px;
-            font-weight: 700; text-transform: uppercase; padding: 8px 14px; cursor: pointer;
-            transition: color 0.2s; display: flex; align-items: center; gap: 6px;
+        /* --- ABAJO IZQUIERDA: INVENTARIO --- */
+        .bottom-left-menu {
+            position: absolute; bottom: 20px; left: 20px;
+            display: flex; gap: 20px; padding: 15px 30px;
         }
-        .btn-bottom-mini:hover { color: #fff; }
-        .btn-bottom-mini.preset-trigger { color: var(--accent-purple); font-weight: 800; }
-        .btn-bottom-mini.preset-trigger:hover { color: #d69fff; }
+        .bottom-btn {
+            display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 900; color: #bbb; cursor: pointer;
+        }
+        .bottom-btn:hover { color: #fff; }
 
-        .match-control-box { display: flex; flex-direction: column; align-items: flex-end; gap: 12px; }
-        .mode-indicator {
-            background: rgba(6, 9, 16, 0.7); padding: 10px 20px; border-radius: 8px;
-            border: 1px solid var(--border-glass); text-align: right; min-width: 220px;
+        /* --- ABAJO DERECHA: START --- */
+        .start-container {
+            position: absolute; bottom: 20px; right: 20px;
+            display: flex; flex-direction: column; align-items: flex-end; gap: 10px; width: 280px;
         }
-        .mode-title { font-size: 13px; font-weight: 900; text-transform: uppercase; color: #fff; letter-spacing: 0.5px; }
-        .mode-map { font-size: 10px; font-weight: 700; color: var(--accent); text-transform: uppercase; margin-top: 2px; }
+        .mode-selector {
+            width: 100%; padding: 15px; text-align: right; cursor: pointer;
+        }
+        .mode-title { font-size: 16px; font-weight: 900; text-transform: uppercase; margin-bottom: 2px; }
+        .mode-map { font-size: 11px; color: #00ffaa; font-weight: bold; }
 
-        .btn-start-game {
-            background: linear-gradient(180deg, #ffb700 0%, #ff8800 100%);
-            border: none; color: #000; width: 220px; padding: 18px; border-radius: 10px;
-            font-size: 22px; font-weight: 900; text-transform: uppercase; cursor: pointer;
-            box-shadow: 0 4px 15px rgba(255, 136, 0, 0.3); transition: transform 0.1s, opacity 0.2s;
-            text-align: center; letter-spacing: 1px;
+        .btn-start {
+            width: 100%; background: linear-gradient(180deg, #ffcc00 0%, #ff8800 100%);
+            color: #000; font-size: 26px; font-weight: 900; font-style: italic;
+            border: none; border-radius: 8px; padding: 15px 0; cursor: pointer;
+            text-transform: uppercase; box-shadow: 0 4px 15px rgba(255, 136, 0, 0.3);
+            transition: transform 0.1s;
         }
-        .btn-start-game:hover { transform: scale(1.02); opacity: 0.95; }
-
-        /* Modal Presets */
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(10px);
-            display: none; justify-content: center; align-items: center; z-index: 1000;
-        }
-        .preset-modal {
-            background: var(--bg-glass); border: 1px solid var(--border-glass);
-            width: 820px; max-width: 95%; border-radius: 16px; display: grid;
-            grid-template-columns: 200px 1fr; overflow: hidden;
-        }
-        .preset-sidebar { background: rgba(4, 6, 10, 0.6); border-right: 1px solid var(--border-glass); padding: 20px; display: flex; flex-direction: column; gap: 10px; }
-        .sidebar-title { font-size: 12px; font-weight: 900; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px; }
-        .preset-tab {
-            background: rgba(255,255,255,0.02); border: 1px solid transparent; color: var(--text-muted); padding: 12px 16px;
-            border-radius: 8px; text-align: left; font-size: 13px; font-weight: 700; cursor: pointer; transition: all 0.2s;
-        }
-        .preset-tab.active { background: rgba(157, 78, 221, 0.12); border-color: var(--accent-purple); color: #fff; }
-        .preset-content { padding: 30px; display: flex; flex-direction: column; justify-content: space-between; }
-        .content-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
-        .content-header h3 { font-size: 18px; font-weight: 900; text-transform: uppercase; }
-        .close-modal { font-size: 24px; color: var(--text-muted); cursor: pointer; }
-        .slots-grid { display: flex; flex-direction: column; gap: 18px; }
-        .slot-box { background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.04); padding: 14px; border-radius: 10px; display: flex; flex-direction: column; gap: 8px; }
-        .slot-box.usable-slot { border-left: 4px solid var(--accent); }
-        .slot-box.ayudable-slot { border-left: 4px solid var(--accent-purple); }
-        .slot-label { font-size: 11px; font-weight: 800; text-transform: uppercase; }
-        .slot-box.usable-slot .slot-label { color: var(--accent); }
-        .slot-box.ayudable-slot .slot-label { color: var(--accent-purple); }
-        select { background: #0b0e14; border: 1px solid var(--border-glass); color: #fff; padding: 10px; border-radius: 6px; width: 100%; outline: none; }
-        .ayudables-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
-        .btn-save-preset { background: #fff; border: none; color: #000; padding: 14px; border-radius: 8px; font-size: 13px; font-weight: 900; text-transform: uppercase; cursor: pointer; margin-top: 20px; width: 100%; }
-        .btn-save-preset:hover { background: var(--accent); }
+        .btn-start:active { transform: scale(0.95); }
+        .btn-start:disabled { filter: grayscale(1); cursor: not-allowed; transform: none; }
     </style>
 </head>
 <body>
 
-    <!-- Renderizado 3D de Personaje Detrás del HUD -->
-    <model-viewer id="lobby-character-3d" 
-                  src="" 
-                  camera-controls 
-                  auto-rotate 
-                  disable-zoom 
-                  interaction-prompt="none"
-                  shadow-intensity="15" 
-                  shadow-softness="1"
-                  style="position: fixed; top: 0; left: 0; width: 100%; height: 100vh; z-index: 1; pointer-events: auto;">
-    </model-viewer>
-
-    <!-- Capa del HUD principal -->
-    <div class="lobby-ui">
-        <div class="top-section">
-            <div class="player-profile-box">
-                <div class="player-level" id="lobby-level">1</div>
-                <div class="player-name" id="lobby-username">Cargando...</div>
-                <div class="player-id" id="lobby-id">ID: ----------</div>
-            </div>
-            <div class="currencies-container">
-                <div class="currency-pill gold">🪙 <span id="lobby-gold">0</span></div>
-                <div class="currency-pill diamonds">💎 <span id="lobby-diamonds">0</span></div>
-            </div>
-        </div>
-
-        <div class="middle-section">
-            <div class="left-menu">
-                <button class="btn-menu-left" onclick="window.location.href='store.html'">🛒 Tienda</button>
-                <button class="btn-menu-left" onclick="alert('Luck Royale próximamente')">🎯 Luck Royale</button>
-                <button class="btn-menu-left" onclick="alert('Pase Booyah próximamente')">🎫 Pase Booyah</button>
-                <button class="btn-menu-left" onclick="alert('Misiones próximamente')">📬 Misiones</button>
-            </div>
-        </div>
-
-        <div class="bottom-section">
-            <div class="bottom-left-group">
-                <button class="btn-bottom-mini" onclick="alert('Abriendo Vault...')">📦 Vault</button>
-                <button class="btn-bottom-mini" onclick="alert('Abriendo Weapons...')">🔫 Weapon</button>
-                <button class="btn-bottom-mini preset-trigger" onclick="openPresetModal()">🛠 Preset</button>
-            </div>
-            <div class="match-control-box">
-                <div class="mode-indicator">
-                    <div class="mode-title">Clasificatoria BOT</div>
-                    <div class="mode-map">Mapa: Bermudas</div>
-                </div>
-                <button class="btn-start-game" onclick="alert('¡Buscando partida!')">START</button>
-            </div>
+    <!-- PERFIL -->
+    <div class="profile-container dark-box">
+        <div class="level-box">1</div>
+        <div class="profile-info">
+            <span class="profile-name">11S</span>
+            <span class="profile-id">ID: 106524103</span>
         </div>
     </div>
 
-    <!-- Modal de equipamiento Presets -->
-    <div class="modal-overlay" id="presetModalOverlay">
-        <div class="preset-modal">
-            <div class="preset-sidebar">
-                <div class="sidebar-title">Presets</div>
-                <button class="preset-tab active" onclick="switchPresetTab(1)">Preset 1</button>
-                <button class="preset-tab" onclick="switchPresetTab(2)">Preset 2</button>
-                <button class="preset-tab" onclick="switchPresetTab(3)">Preset 3</button>
-                <button class="preset-tab" onclick="switchPresetTab(4)">Preset 4</button>
-                <button class="preset-tab" onclick="switchPresetTab(5)">Preset 5</button>
-            </div>
-            <div class="preset-content">
-                <div>
-                    <div class="content-header">
-                        <h3 id="active-preset-title">Configurar Preset 1</h3>
-                        <span class="close-modal" onclick="closePresetModal()">&times;</span>
-                    </div>
-                    <div class="slots-grid">
-                        <div class="slot-box usable-slot">
-                            <div class="slot-label">Habilidad Usable (Máx 1)</div>
-                            <select id="select-usable"><option value="">Ninguno</option></select>
-                        </div>
-                        <div class="slot-box ayudable-slot">
-                            <div class="slot-label">Habilidades Ayudables (Máx 3)</div>
-                            <div class="ayudables-row">
-                                <select id="select-ayudable-1"><option value="">Vacío</option></select>
-                                <select id="select-ayudable-2"><option value="">Vacío</option></select>
-                                <select id="select-ayudable-3"><option value="">Vacío</option></select>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <button class="btn-save-preset" onclick="saveActivePresetToServer()">Guardar Equipamiento</button>
-            </div>
+    <!-- MONEDAS -->
+    <div class="currency-container">
+        <div class="currency-pill">
+            <span>🪙</span> <span class="text-gold">262.225</span>
+        </div>
+        <div class="currency-pill">
+            <span>💎</span> <span class="text-diamond">36</span>
         </div>
     </div>
 
-    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
-        import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+    <!-- MENÚ LATERAL -->
+    <div class="left-menu">
+        <div class="side-btn dark-box"><span>🛒</span> TIENDA</div>
+        <div class="side-btn dark-box"><span>🎯</span> LUCK ROYALE</div>
+        <div class="side-btn dark-box"><span>🎫</span> PASE BOOYAH</div>
+        <div class="side-btn dark-box"><span>📬</span> MISIONES</div>
+    </div>
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyDeUPVDX40AFX-W_crtUWm0TsXS2smx1zo",
-            authDomain: "frontera-game.firebaseapp.com",
-            projectId: "frontera-game",
-            storageBucket: "frontera-game.firebasestorage.app",
-            messagingSenderId: "728596699203",
-            appId: "1:728596699203:web:a199829078de6a2ef95cf6"
-        };
+    <!-- MENÚ INFERIOR IZQUIERDO -->
+    <div class="bottom-left-menu dark-box">
+        <div class="bottom-btn"><span>📦</span> VAULT</div>
+        <div class="bottom-btn"><span>🔫</span> WEAPON</div>
+        <div class="bottom-btn"><span>🛠️</span> PRESET</div>
+    </div>
 
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
+    <!-- ZONA DE START -->
+    <div class="start-container">
+        <div class="mode-selector dark-box">
+            <div class="mode-title">CLASIFICATORIA BOT</div>
+            <div class="mode-map">MAPA: BERMUDAS</div>
+        </div>
+        <button id="btn-start" class="btn-start">START</button>
+    </div>
 
-        let currentUserDocRef = null;
-        let misPersonajes = [];
-        let currentPresetIndex = 1;
-        let todosLosPresets = {
-            preset1: { usable: "", ayudables: ["", "", ""] },
-            preset2: { usable: "", ayudables: ["", "", ""] },
-            preset3: { usable: "", ayudables: ["", "", ""] },
-            preset4: { usable: "", ayudables: ["", "", ""] },
-            preset5: { usable: "", ayudables: ["", "", ""] }
-        };
+    <!-- LÓGICA DEL JUEGO -->
+    <script>
+        const btnStart = document.getElementById("btn-start");
 
-        onAuthStateChanged(auth, async (user) => {
-            if (!user) {
-                window.location.replace("../index.html");
-            } else {
-                currentUserDocRef = doc(db, "usuarios", user.uid);
-                const docSnap = await getDoc(currentUserDocRef);
-                
-                if (docSnap.exists()) {
-                    const data = docSnap.data();
-                    document.getElementById("lobby-username").textContent = data.username || "Jugador";
-                    document.getElementById("lobby-id").textContent = `ID: ${data.gameId || "106524103"}`;
-                    document.getElementById("lobby-gold").textContent = Number(data.oro || 0).toLocaleString();
-                    document.getElementById("lobby-diamonds").textContent = data.diamantes || 0;
-                    if(data.nivel) document.getElementById("lobby-level").textContent = data.nivel;
+        btnStart.addEventListener("click", () => {
+            let timer = 10;
+            
+            // Congelar el botón visualmente
+            btnStart.disabled = true;
+            
+            const countdown = setInterval(() => {
+                btnStart.innerText = `(${timer}S)`;
+                timer--;
+
+                if (timer < 0) {
+                    clearInterval(countdown);
+                    btnStart.innerText = "CARGANDO...";
                     
-                    misPersonajes = data.personajes || [];
-                    if (data.presets) todosLosPresets = data.presets;
-
-                    const visor3D = document.getElementById("lobby-character-3d");
-                    if (visor3D) {
-                        if (data.genero === "mujer") {
-                            visor3D.setAttribute("src", "https://www.dropbox.com/scl/fi/8k52afnif25g5kox2sazk/Defeated-1.glb?rlkey=3ehphvuvj61meyf05xh39kafy&st=qaajv7yz&dl=1");
-                        } else {
-                            visor3D.setAttribute("src", "https://www.dropbox.com/scl/fi/coqtz064191supz8vv7e4/TamakiGlobal.glb?rlkey=ioica9w27zaxr84wr78aep09z&st=2c2ub9de&dl=1");
-                        }
-                    }
-
-                    poblarSelectoresHabilidades();
+                    // Redirección directa a tu archivo match.html
+                    window.location.href = "match.html?id=10960960";
                 }
-            }
+            }, 1000);
         });
-
-        function poblarSelectoresHabilidades() {
-            const selectUsable = document.getElementById("select-usable");
-            const selectAyudable1 = document.getElementById("select-ayudable-1");
-            const selectAyudable2 = document.getElementById("select-ayudable-2");
-            const selectAyudable3 = document.getElementById("select-ayudable-3");
-
-            selectUsable.innerHTML = '<option value="">Ninguno</option>';
-            const defaultAyudable = '<option value="">Vacío</option>';
-            selectAyudable1.innerHTML = defaultAyudable; selectAyudable2.innerHTML = defaultAyudable; selectAyudable3.innerHTML = defaultAyudable;
-
-            if (misPersonajes.includes("Tamaki")) selectUsable.innerHTML += `<option value="Tamaki">Tamaki</option>`;
-            if (misPersonajes.includes("Tivet")) {
-                const opt = `<option value="Tivet">Tivet</option>`;
-                selectAyudable1.innerHTML += opt; selectAyudable2.innerHTML += opt; selectAyudable3.innerHTML += opt;
-            }
-            if (misPersonajes.includes("Gallet")) {
-                const opt = `<option value="Gallet">Gallet</option>`;
-                selectAyudable1.innerHTML += opt; selectAyudable2.innerHTML += opt; selectAyudable3.innerHTML += opt;
-            }
-        }
-
-        window.openPresetModal = () => { document.getElementById("presetModalOverlay").style.display = "flex"; switchPresetTab(1); };
-        window.closePresetModal = () => { document.getElementById("presetModalOverlay").style.display = "none"; };
-
-        window.switchPresetTab = function(num) {
-            currentPresetIndex = num;
-            document.querySelectorAll('.preset-tab').forEach((tab, index) => {
-                if (index === (num - 1)) tab.classList.add('active');
-                else tab.classList.remove('active');
-            });
-            document.getElementById("active-preset-title").textContent = `Configurar Preset ${num}`;
-            const configActual = todosLosPresets[`preset${num}`];
-            document.getElementById("select-usable").value = configActual.usable || "";
-            document.getElementById("select-ayudable-1").value = configActual.ayudables[0] || "";
-            document.getElementById("select-ayudable-2").value = configActual.ayudables[1] || "";
-            document.getElementById("select-ayudable-3").value = configActual.ayudables[2] || "";
-        };
-
-        window.saveActivePresetToServer = async function() {
-            if (!currentUserDocRef) return;
-            todosLosPresets[`preset${currentPresetIndex}`] = {
-                usable: document.getElementById("select-usable").value,
-                ayudables: [
-                    document.getElementById("select-ayudable-1").value,
-                    document.getElementById("select-ayudable-2").value,
-                    document.getElementById("select-ayudable-3").value
-                ]
-            };
-            try {
-                await updateDoc(currentUserDocRef, { presets: todosLosPresets });
-                alert(`¡Preset ${currentPresetIndex} guardado con éxito!`);
-            } catch (err) { console.error(err); }
-        };
     </script>
 </body>
 </html>
