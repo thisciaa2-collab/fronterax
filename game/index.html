@@ -160,8 +160,8 @@
                 document.getElementById('user-id').innerText = `ID: ${numericId}`;
 
             } else {
-                // Si alguien entra aquí y no está logueado, lo mandas pa' fuera (login)
-                window.location.href = "../login.html"; 
+                // Si alguien entra aquí y no está logueado, lo mandamos al index.html principal (Inicio/Login)
+                window.location.href = "../index.html"; 
             }
         });
 
@@ -182,7 +182,7 @@
                     clearInterval(countdown);
                     btnStart.innerText = "CARGANDO...";
                     
-                    // Redirección directa al mapa con los bots
+                    // Redirección directa al mapa con los bots dentro de la misma carpeta /game
                     window.location.href = "match.html?id=10960960";
                 }
             }, 1000);
