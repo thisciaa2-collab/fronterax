@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Frontera Game | En Partida</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
+    
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-user-select: none; }
+        body { background: #05070a; overflow: hidden; font-family: 'Arial', sans-serif; }
+        
+        #game-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
+
+        /* HUD SUPERIOR */
+        #hud-top {
+            position: absolute; top: 20px; left: 0; width: 100%;
+            display: flex; justify-content: center; z-index: 10; pointer-events: none;
+        }
+        #status-box {
+            background: rgba(0,0,0,0.8); border: 2px solid #00ffcc;
+            padding: 10px 30px; border-radius: 5px; color: #fff;
+            text-align: center; font-weight: 900; letter-spacing: 1px;
+            box-shadow: 0 0 15px rgba(0,255,204,0.4);
+        }
+
+        #info-right {
+            position: absolute; top: 20px; right: 20px; z-index: 10;
+            background: rgba(0,0,0,0.6); color: #fff; padding: 10px;
+            border-radius: 5px; font-size: 12px; text-align: right; border-right: 3px solid #00ffcc;
+        }
+
+        /* HUD MÓVIL */
+        #mobile-hud { position: absolute; width: 100%; height: 100%; top: 0; left: 0; z-index: 20; display: none; pointer-events: none; }
+        #mobile-hud * { pointer-events: auto; }
+        
+        #joystick-container { position: absolute; bottom: 50px; left: 50px; width: 120px; height: 120px; background: rgba(255,255,255,0.1); border-radius: 50%; border: 2px solid rgba(255,255,255,0.3); }
+        #joystick-knob { position: absolute; top: 35px; left: 35px; width: 50px; height: 50px; background: #00ffcc; border-radius: 50%; box-shadow: 0 0 10px #00ffcc; }
+
+        #action-buttons { position: absolute; bottom: 50px; right: 50px; display: flex; flex-direction: column; gap: 20px; }
+        .btn-circle { width: 70px; height: 70px; border-radius: 50%; border: 2px solid #fff; background: rgba(0,0,0,0.5); color: #fff; font-weight: 900; font-size: 10px; display: flex; align-items: center; justify-content: center; }
+        #btn-jump { background: #ffaa00; border-color: #ffaa00; display: none; }
+
+        /* EFECTOS DE DAÑO */
+        #hit-marker { position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%); color: #ff3333; font-size: 40px; font-weight: 900; opacity: 0; transition: opacity 0.1s; pointer-events: none; z-index: 100; text-shadow: 0 0 10px #000; }
+        
+        #controls-pc-hint { position: absolute; bottom: 20px; left: 20px; color: rgba(255,255,255,0.5); font-size: 12px; z-index: 5; }
+    </style>
+</head>
+<body>
+
+    <div id="game-canvas"></div>
+    <div id="hit-marker">-25 HP</div>
+
+    <div id="hud-top">
+        <div id="status-box">ESPERANDO DESPEGUE...</div>
+    </div>
+
+    <div id="info-right">
+        <div>VIVOS: <span id="vivos-count" style="color:#00ffcc;">6</span></div>
+        <div style="font-size:10px; color:#aaa; margin-top:5px;">ID PARTIDA: 10960960</div>
+    </div>
+
+    <div id="controls-pc-hint">PC: WASD Mover | SHIFT Correr | F Saltar | N Puño</div>
+
+    <div id="mobile-hud">
+        <div id="joystick-container">
+            <div id="joystick-knob"></div>
+        </div>
+        <div id="action-buttons">
+            <div class="btn-circle" id="btn-jump">SALTAR</div>
+            <div class="btn-circle" id="btn-punch">PUÑO (N)</div>
+            <div class="btn-circle" id="btn-run">CORRER</div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        // --- 1. CONFIGURACIÓN Y DETECCIÓN ---
+        const isMobile = /Android|iPhone|iPad|iPod|Windows Phone/i.test(navigator.userAgent);
+        if(isMobile) document.getElementById('mobile-hud').style.display = 'block';
+
+        const STATES = { PLANE: 0, FALLING: 1, GROUND: 2 };
+        let currentState = STATES.PLANE;
+        let countdownJump = 5;
+
+        // --- 2. MOTOR 3D ---
+        let scene, camera, renderer, player, airplane, ground, parachute;
+        let bots = [];
+        let keys = {};
+        let joystick = { x: 0, y: 0, active: false };
+
+        function init() {
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x0a1525);
+            scene.fog = new THREE.FogExp2(0x0a1525, 0.002);
+
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 2000);
+            
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.shadowMap.enabled = true;
+            document.getElementById('game-canvas').appendChild(renderer.domElement);
+
+            const ambient = new THREE.AmbientLight(0xffffff, 0.5);
+            scene.add(ambient);
+
+            const sun = new THREE.DirectionalLight(0xffffff, 0.8);
+            sun.position.set(50, 200, 50);
+            scene.add(sun);
+
+            createWorld();
+            createPlayer();
+            createBots();
+            createPlane();
+
+            setupControls();
+            animate();
+        }
+
+        // --- 3. CREACIÓN DE OBJETOS ---
+        function createWorld() {
+            // Suelo gigante
+            const geo = new THREE.PlaneGeometry(3000, 3000);
+            const mat = new THREE.MeshStandardMaterial({ color: 0x1a2e1a });
+            ground = new THREE.Mesh(geo, mat);
+            ground.rotation.x = -Math.PI / 2;
+            scene.add(ground);
+
+            // Algunos edificios simples (cubos)
+            for(let i=0; i<30; i++) {
+                const h = 20 + Math.random()*50;
+                const b = new THREE.Mesh(new THREE.BoxGeometry(30, h, 30), new THREE.MeshStandardMaterial({color:0x222222}));
+                b.position.set(Math.random()*1000 - 500, h/2, Math.random()*1000 - 500);
+                scene.add(b);
+            }
+        }
+
+        function createPlayer() {
+            player = new THREE.Group();
+            const body = new THREE.Mesh(new THREE.BoxGeometry(2, 3, 1), new THREE.MeshStandardMaterial({color: 0x00aaff}));
+            body.position.y = 1.5;
+            player.add(body);
+            
+            const head = new THREE.Mesh(new THREE.BoxGeometry(1.2, 1.2, 1.2), new THREE.MeshStandardMaterial({color: 0xffccaa}));
+            head.position.y = 3.5;
+            player.add(head);
+
+            // Brazo para el puñetazo
+            const arm = new THREE.Mesh(new THREE.BoxGeometry(0.6, 1.5, 0.6), new THREE.MeshStandardMaterial({color: 0x00aaff}));
+            arm.position.set(1.4, 2, 0);
+            arm.name = "arm";
+            player.add(arm);
+
+            player.position.set(0, 500, 0);
+            scene.add(player);
+        }
+
+        function createBots() {
+            for(let i=0; i<5; i++) {
+                const bot = new THREE.Group();
+                const body = new THREE.Mesh(new THREE.BoxGeometry(2, 3, 1), new THREE.MeshStandardMaterial({color: 0xff3333}));
+                body.position.y = 1.5;
+                bot.add(body);
+                
+                bot.position.set(Math.random()*10 - 5, 498, Math.random()*20 - 10);
+                bot.userData = { life: 100, state: STATES.PLANE, speed: 0.2 + Math.random()*0.2 };
+                bots.push(bot);
+                scene.add(bot);
+            }
+        }
+
+        function createPlane() {
+            airplane = new THREE.Group();
+            const body = new THREE.Mesh(new THREE.CylinderGeometry(10, 10, 60), new THREE.MeshStandardMaterial({color: 0x333333}));
+            body.rotation.z = Math.PI / 2;
+            airplane.add(body);
+            
+            const wing = new THREE.Mesh(new THREE.BoxGeometry(80, 1, 15), new THREE.MeshStandardMaterial({color: 0x222222}));
+            airplane.add(wing);
+
+            airplane.position.set(0, 500, -100);
+            scene.add(airplane);
+        }
+
+        function deployParachute() {
+            parachute = new THREE.Mesh(new THREE.ConeGeometry(10, 5, 8), new THREE.MeshStandardMaterial({color: 0xffaa00, wireframe: true}));
+            parachute.position.y = 8;
+            player.add(parachute);
+        }
+
+        // --- 4. CONTROLES ---
+        function setupControls() {
+            window.onkeydown = (e) => keys[e.key.toLowerCase()] = true;
+            window.onkeyup = (e) => keys[e.key.toLowerCase()] = false;
+
+            // Salto del avión
+            window.addEventListener('keydown', (e) => {
+                if(e.key.toLowerCase() === 'f' && currentState === STATES.PLANE && countdownJump <= 0) jump();
+                if(e.key.toLowerCase() === 'n') punch();
+            });
+
+            // Joystick Móvil
+            const knob = document.getElementById('joystick-knob');
+            const container = document.getElementById('joystick-container');
+            
+            container.ontouchstart = (e) => joystick.active = true;
+            window.ontouchmove = (e) => {
+                if(!joystick.active) return;
+                let t = e.touches[0];
+                let rect = container.getBoundingClientRect();
+                let x = t.clientX - (rect.left + 60);
+                let y = t.clientY - (rect.top + 60);
+                let dist = Math.min(Math.sqrt(x*x + y*y), 40);
+                let angle = Math.atan2(y, x);
+                
+                joystick.x = Math.cos(angle) * (dist/40);
+                joystick.y = Math.sin(angle) * (dist/40);
+                
+                knob.style.transform = `translate(${Math.cos(angle)*dist}px, ${Math.sin(angle)*dist}px)`;
+            };
+            window.ontouchend = () => {
+                joystick.active = false;
+                joystick.x = 0; joystick.y = 0;
+                knob.style.transform = `translate(0px, 0px)`;
+            };
+
+            document.getElementById('btn-jump').onclick = jump;
+            document.getElementById('btn-punch').ontouchstart = punch;
+        }
+
+        function jump() {
+            currentState = STATES.FALLING;
+            document.getElementById('btn-jump').style.display = 'none';
+            document.getElementById('status-box').innerText = "DESCENDIENDO...";
+            deployParachute();
+        }
+
+        function punch() {
+            if(currentState !== STATES.GROUND) return;
+            const arm = player.getObjectByName("arm");
+            arm.position.z = -2;
+            setTimeout(() => arm.position.z = 0, 150);
+
+            // Lógica de daño a bots
+            bots.forEach(bot => {
+                if(bot.userData.life <= 0) return;
+                let dist = player.position.distanceTo(bot.position);
+                if(dist < 6) {
+                    bot.userData.life -= 25;
+                    showHit();
+                    if(bot.userData.life <= 0) {
+                        scene.remove(bot);
+                        updateVivos();
+                    }
+                }
+            });
+        }
+
+        function showHit() {
+            const h = document.getElementById('hit-marker');
+            h.style.opacity = '1';
+            setTimeout(() => h.style.opacity = '0', 300);
+        }
+
+        function updateVivos() {
+            let v = bots.filter(b => b.userData.life > 0).length + 1;
+            document.getElementById('vivos-count').innerText = v;
+            if(v === 1) document.getElementById('status-box').innerText = "¡VICTORIA!";
+        }
+
+        // --- 5. ANIMACIÓN Y LÓGICA ---
+        function animate() {
+            requestAnimationFrame(animate);
+
+            if(currentState === STATES.PLANE) {
+                airplane.position.z += 1.2;
+                player.position.set(airplane.position.x, airplane.position.y - 4, airplane.position.z);
+                
+                bots.forEach(bot => {
+                    bot.position.z = airplane.position.z + (Math.random()-0.5)*10;
+                    bot.position.x = airplane.position.x + (Math.random()-0.5)*5;
+                });
+
+                if(countdownJump > 0) {
+                    countdownJump -= 0.016;
+                    document.getElementById('status-box').innerText = `DESPEGUE EN: ${Math.ceil(countdownJump)}s`;
+                } else {
+                    document.getElementById('status-box').innerText = "¡ZONA DE SALTO LISTA!";
+                    if(isMobile) document.getElementById('btn-jump').style.display = 'flex';
+                }
+
+                camera.position.set(airplane.position.x, airplane.position.y + 20, airplane.position.z - 60);
+                camera.lookAt(airplane.position);
+
+            } else if(currentState === STATES.FALLING) {
+                player.position.y -= 1.5;
+                player.position.z += 0.5;
+
+                bots.forEach(bot => {
+                    if(Math.random() < 0.01) bot.userData.state = STATES.FALLING;
+                    if(bot.userData.state === STATES.FALLING) {
+                        bot.position.y -= 1.5;
+                        bot.position.z += 0.5;
+                    }
+                });
+
+                if(player.position.y <= 0) {
+                    player.position.y = 0;
+                    currentState = STATES.GROUND;
+                    player.remove(parachute);
+                    document.getElementById('status-box').innerText = "¡LUCHA!";
+                }
+
+                camera.position.set(player.position.x, player.position.y + 30, player.position.z - 30);
+                camera.lookAt(player.position);
+
+            } else if(currentState === STATES.GROUND) {
+                // Movimiento
+                let speed = keys['shift'] ? 1.0 : 0.5;
+                let moveX = joystick.active ? joystick.x : (keys['d'] ? 1 : (keys['a'] ? -1 : 0));
+                let moveZ = joystick.active ? -joystick.y : (keys['w'] ? 1 : (keys['s'] ? -1 : 0));
+
+                player.position.x += moveX * speed;
+                player.position.z += moveZ * speed;
+
+                if(moveX !== 0 || moveZ !== 0) {
+                    player.rotation.y = Math.atan2(moveX, moveZ);
+                }
+
+                // AI Bots
+                bots.forEach(bot => {
+                    if(bot.userData.life <= 0) return;
+                    bot.position.y = 0;
+                    let dist = bot.position.distanceTo(player.position);
+                    if(dist < 150 && dist > 4) {
+                        bot.lookAt(player.position);
+                        bot.translateZ(bot.userData.speed);
+                    }
+                });
+
+                camera.position.set(player.position.x, player.position.y + 15, player.position.z - 30);
+                camera.lookAt(player.position);
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        window.onresize = () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        };
+
+        init();
+    </script>
+</body>
+</html>
